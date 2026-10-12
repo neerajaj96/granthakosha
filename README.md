@@ -1,9 +1,19 @@
 # GranthaKosha — ग्रन्थकोश
 
-Offline-first Sanskrit scripture + multi-commentary reader.
-Seed corpus: **Durgāsaptaśatī, Guptavatyādi-sapta-ṭīkā-saṃvalitā** (extracted verbatim from the project Google Doc).
+Offline-first Sanskrit scripture reader with Simple English throughout.
+Two scriptures: **Durgāsaptaśatī** (Guptavatyādi-sapta-ṭīkā) and
+**Tantrāloka Ch. 1** (Abhinavagupta + Viveka, tr. Dyczkowski).
 
 Zero dependencies. Plain Node + browser-native ES modules.
+**Viewing only** — there is no admin/editing UI; new content is added by the
+maintainer through versioned batches (`content/*.json` + `tools/merge-primary.mjs`).
+
+## Use
+
+Top bar: Language (संस्कृतम् / English), script (Devanagari/IAST), theme,
+sizes, and search (scope + author filters). Every verse carries one primary
+**GranthaKosha explains** card right below it — a combined explanation of the
+verse + all its commentaries in layman Indian English, with nothing missed.
 
 ## Run
 

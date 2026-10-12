@@ -121,6 +121,8 @@ export function parseCorpus(rawText, opts = {}) {
       ordinal: idx + 1,
       section,
       mula: mulaBuf.join("\n"),
+      en: "",
+      primaryEn: "",
       createdAt: 0,
       updatedAt: 0,
     });
@@ -130,7 +132,7 @@ export function parseCorpus(rawText, opts = {}) {
     activeAuthor = null;
     // attach buffered preface chunks to this passage
     for (const p of pendingTikas) {
-      commentaries.push({ id: `c:${commentaries.length + 1}`, passageId: passages[idx].id, author: p.author, title: "", text: p.lines.join("\n"), createdAt: 0, updatedAt: 0 });
+      commentaries.push({ id: `c:${commentaries.length + 1}`, passageId: passages[idx].id, author: p.author, title: "", text: p.lines.join("\n"), simpleEn: "", createdAt: 0, updatedAt: 0 });
       note("authors", p.author);
     }
     pendingTikas = [];
@@ -143,7 +145,7 @@ export function parseCorpus(rawText, opts = {}) {
     }
     const text = tika.lines.join("\n");
     if (currentPassageIdx >= 0) {
-      commentaries.push({ id: `c:${commentaries.length + 1}`, passageId: passages[currentPassageIdx].id, author: tika.author, title: "", text, createdAt: 0, updatedAt: 0 });
+      commentaries.push({ id: `c:${commentaries.length + 1}`, passageId: passages[currentPassageIdx].id, author: tika.author, title: "", text, simpleEn: "", createdAt: 0, updatedAt: 0 });
       note("authors", tika.author);
     } else {
       pendingTikas.push({ author: tika.author, lines: tika.lines.slice() });
@@ -269,10 +271,10 @@ export function csvToDoc(text, opts = {}) {
     const mula = (r[ci("mula")] || "").trim();
     if (!mula) { errors.push(`row ${i + 1}: empty mula skipped`); return; }
     const pid = `p:${passages.length + 1}`;
-    passages.push({ id: pid, scriptureId: "csv", ordinal: passages.length + 1, section: (r[ci("section")] || "").trim(), mula, createdAt: 0, updatedAt: 0 });
+    passages.push({ id: pid, scriptureId: "csv", ordinal: passages.length + 1, section: (r[ci("section")] || "").trim(), mula, en: "", primaryEn: "", createdAt: 0, updatedAt: 0 });
     const author = (r[ci("author")] || "").trim();
     const comm = (r[ci("commentary")] || "").trim();
-    if (comm) commentaries.push({ id: `c:${commentaries.length + 1}`, passageId: pid, author: author || "Bhāṣya (untagged)", title: "", text: comm, createdAt: 0, updatedAt: 0 });
+    if (comm) commentaries.push({ id: `c:${commentaries.length + 1}`, passageId: pid, author: author || "Bhāṣya (untagged)", title: "", text: comm, simpleEn: "", createdAt: 0, updatedAt: 0 });
   });
   return {
     version: 1,

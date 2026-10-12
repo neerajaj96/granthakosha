@@ -48,12 +48,27 @@ DB `granthakosha` v1, keyPath `id`), `SupabaseAdapter` (M6, PostgREST over
 (noise dropped, per-author/section counts). `csvToDoc(text)` for
 `section,mula,author,commentary` rows. See MILESTONES M3 for heuristics.
 
+## Tantraloka parser (`src/lib/tantraloka-parser.js`)
+
+`parseTantraloka(text)` → ExportDoc with `Passage{mula, en}` +
+`Commentary(Viveka|Notes)`: verse-closer run classification, IAST skipping,
+page-break-aware note tracking, appendix grouping. Batches:
+`content/primary-batch-N.json` merged by `tools/merge-primary.mjs`
+(match: scripture+ordinal / author), committed into `corpus/*.json`.
+
 ## Search (`src/lib/search.js`)
 
 `buildIndex(passages, commentaries)` (fold-key cache; dual native+transliterated
 keys for cross-script queries) → `search(index, query, {scope, author})` →
 `[{pid, score, hits, ordinal}]` ranked. `highlight(text, query)` → safe HTML
 with `<mark>` on raw-substring hits. `tokenize`, `indexKeys`, `escapeHtml`.
+
+## Display plane (`src/lib/display.js`)
+
+`renderText(s, en, lang, script)` / `tikaDisplayText(c, lang, script)` —
+EN prefers `en`/`simpleEn`, falls back to Latin-script originals, else the
+forthcoming notice. Pure + tested. Primary cards (`primaryEn`) render in both
+languages, pinned under each verse.
 
 ## IAST (`src/lib/iast.js`)
 
@@ -69,11 +84,11 @@ vowel signs). Never applied to stored text.
 local). Deletes never propagate. UI: Test / Dry-run / Push / Pull / Sync with
 pre-write auto-snapshots; creds (URL only) in localStorage.
 
-## Roles (`src/lib/rbac.js`, M7)
+## Roles — removed (viewing-only app)
 
-`can(role, action)` — reader < editor < admin (see matrix in source).
-Local gating is UX-level; enforcement is Supabase RLS
-(`supabase/schema.sql`: public read, editor+ write, admin-only delete).
+Earlier RBAC work was retired per direction: no admin mode, plain viewing.
+Content changes go through the maintainer (versioned `content/*.json` batches).
+Library code (storage/sync/snapshots) is retained + tested for maintainer tooling.
 
 ## Conventions
 

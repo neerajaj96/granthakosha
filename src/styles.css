@@ -91,6 +91,8 @@ textarea { width: 100%; min-height: 4.5em; line-height: 1.9; }
 .tika .body { padding: .6rem .9rem; white-space: pre-wrap; border-top: 1px dashed var(--glass-brd); }
 .tika[data-open="false"] .body { display: none; }
 .chev { color: var(--accent); white-space: nowrap; }
+.tika.primary { border-color: var(--accent); }
+.tika.primary > button.head { background: color-mix(in srgb, var(--accent) 18%, transparent); font-weight: 700; }
 .forms { display: grid; gap: .6rem; margin: 1rem 0; }
 .row { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
 .panel { background: var(--card); border: 1px solid var(--glass-brd); border-radius: var(--radius); padding: .9rem 1rem; }

@@ -1,20 +1,36 @@
 # GranthaKosha — Revised Execution Checklist
 
-Source of truth: Google Doc `Durgasaptashati / Guptavati-adi-sapta-tika-samvalita`
-(~23.5k lines / ~1.37M chars: Upoddhāta, Kavaca, Argalā, Kīlaka, 13 Adhyāyas,
-3 Rahasyas, Sūktas + 7 ṭīkās). Seed excerpts in `src/lib/seed.js`.
+Source scriptures:
+- Google Doc `Durgasaptashati / Guptavati-adi-sapta-tika-samvalita`
+  (~23.5k lines: Upoddhāta, Kavaca, Argalā, Kīlaka, 13 Adhyāyas,
+  3 Rahasyas, Sūktas + 7 ṭīkās). Seed excerpts in `src/lib/seed.js`.
+- Drive file `Tantrāloka Ch.1` (Dyczkowski translation, ~20.7k lines):
+  `corpus/tantraloka-ch1-source.txt` → 220 verse units + 1571 notes/Viveka.
 
-## M1 — Vertical slice [Implemented] [Tested] (11/11 node --test pass)
-- [x] Scripture entity (create/list/select)
-- [x] Paste + persist exact Mūla (verbatim, empty rejected)
-- [x] Multiple independent commentaries per passage
-- [x] Per-commentary expand/collapse, persisted across reload
-- [x] Reload restores state (IndexedDB data + localStorage UI)
-- [x] Append-only growth, stable ordinal IDs, no dupes, no remap corruption
-- [x] Unicode preservation tests (Vedic accents, IAST, NFC≠NFD)
-- [x] Import/export round-trip + duplicate-skip + corrupt-rollback tests
-- [x] Reader chrome: Dark/Light/Sepia, Deva/IAST toggle, font-size, responsive,
-      glassmorphism, View Transitions, swipe gestures, j/k/o///t shortcuts, PWA shell
+Viewing-only app (no roles, no editing UI). Content grows through
+maintainer batches: `content/primary-batch-N.json` merged by
+`tools/merge-primary.mjs` into the corpus JSONs (matched by
+scripture+ordinal / author), then seeded into the app.
+
+## M1 — Vertical slice [Implemented] [Tested]
+- [x] Scripture entity, exact Mūla persistence, independent commentaries,
+      per-card expand/collapse, reload restore, append-only growth, unicode +
+      import/export integrity tests, full reader chrome (themes, Deva/IAST,
+      responsive, gestures, shortcuts, PWA)
+
+## Content model — Simple English everywhere [Implemented] [Tested]
+- [x] `Passage.en` (literal translation) + `Passage.primaryEn` (ONE combined
+      layman explanation per verse, verse + all commentaries synthesized);
+      `Commentary.simpleEn` (layman rendering, never verbatim-scholarly)
+- [x] Primary card pinned right below every verse (`GranthaKosha explains`);
+      SA/EN language toggle; EN fallback = Latin originals shown, Sanskrit-only
+      content shows an honest "being prepared" notice + coverage counters
+- [x] Batch 1: 6/6 seed verses (literal EN + primaries + 9 simplified ṭīkās);
+      Tantrāloka units 1–8 primaries via versioned sidecar + merge CLI
+- [x] `src/lib/display.js` pure display plane + 4 tests; store carry-through
+      (add/import/export round-trip) tested; search indexes EN planes too
+- [ ] Batches 2+: remaining 212 Tantraloka primaries, 2944 Saptashati primaries
+      + 4550 simplified ṭīkās — added iteratively through the maintainer
 
 ## M2 — Reader View hardening [Implemented]
 - [x] Split-screen passages + commentary cards, mobile single-column
@@ -77,16 +93,14 @@ Source of truth: Google Doc `Durgasaptashati / Guptavati-adi-sapta-tika-samvalit
       mocked-fetch CRUD mapping + error surfacing)
 - [ ] Live end-to-end against a real project (no backend available in this env)
 
-## M7 — RBAC / Security / WCAG AA [Implemented] [Tested]
-- [x] `src/lib/rbac.js` role matrix (reader/editor/admin) + 3 tests; UI gating:
-      reader hides all mutation controls, restore/repair/delete-snapshot are
-      admin-only (disabled with titles); role switcher persisted, default admin
-- [x] A11y pass: skip link, `role=status aria-live=polite` on all status regions,
-      labeled controls, native dialog focus-in, drawer focus-out/return-focus,
-      Esc handling, high-contrast `<mark>` per theme, focus-visible rings,
-      reduced-motion support, touch-friendly targets + swipe gestures
-- [x] Server enforcement path: RLS policies in `supabase/schema.sql`
-- [ ] Full WCAG AA instrumented audit (no browser tooling in this env)
+## M7 — Viewing mode (roles/admin UI removed) [Implemented]
+- [x] No roles, no create/append/edit/delete/import/snapshot/cloud/repair UI —
+      plain reading + search + themes only; content is maintainer-managed
+      (versioned batches, committed + redeployed). `src/lib/rbac.js` removed;
+      sync/storage/snapshot library code retained + tested for maintainer use.
+- [x] A11y kept: skip link, live status regions, labeled controls, drawer
+      focus-in/return-focus, Esc handling, high-contrast `<mark>` per theme,
+      focus-visible rings, reduced-motion, touch targets + swipe gestures
 
 ## M8 — Docs & API [Implemented]
 - [x] README + integrity rules + `docs/API.md` (adapter contract, ExportDoc v1,

@@ -65,7 +65,7 @@ export function buildIndex(passages, commentaries) {
   for (const p of passages) {
     byPassage.set(p.id, p);
     const seen = new Set();
-    for (const raw of rawToks(p.mula)) {
+    for (const raw of rawToks(`${p.mula || ""}\n${p.en || ""}\n${p.primaryEn || ""}\n${p.section || ""}`)) {
       for (const k of keysFor(raw)) {
         if (seen.has(k)) continue;
         seen.add(k);
@@ -75,7 +75,7 @@ export function buildIndex(passages, commentaries) {
   }
   for (const c of commentaries) {
     const seen = new Set();
-    const hay = `${c.author} ${c.title || ""} ${c.text}`;
+    const hay = `${c.author} ${c.title || ""} ${c.text} ${c.simpleEn || ""}`;
     for (const raw of rawToks(hay)) {
       for (const k of keysFor(raw)) {
         if (seen.has(k)) continue;

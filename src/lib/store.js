@@ -46,8 +46,9 @@ export class GranthaStore {
     return max + 1;
   }
 
-  async addPassage(scriptureId, mula, section = "") {
-    if (!mula) throw new Error("Mula text must not be empty (exact text required)");
+  async addPassage(scriptureId, mula, section = "", extra = {}) {
+    const en = typeof extra.en === "string" ? extra.en : "";
+    if (!mula && !en) throw new Error("Mula text must not be empty (exact text required)");
     const s = await this.getScripture(scriptureId);
     if (!s) throw new Error(`Scripture not found: ${scriptureId}`);
     const ordinal = await this.nextOrdinal(scriptureId);
@@ -60,7 +61,9 @@ export class GranthaStore {
       scriptureId,
       ordinal: finalOrdinal,
       section,
-      mula, // stored EXACTLY, no normalization
+      mula: mula || "", // stored EXACTLY, no normalization
+      en,
+      primaryEn: typeof extra.primaryEn === "string" ? extra.primaryEn : "",
       createdAt: now,
       updatedAt: now,
     };
@@ -81,7 +84,7 @@ export class GranthaStore {
   }
 
   // ---------- Commentaries (independent relationships) ----------
-  async addCommentary(passageId_, author, text, title = "") {
+  async addCommentary(passageId_, author, text, title = "", extra = {}) {
     if (!author.trim()) throw new Error("Commentary author is required");
     if (!text) throw new Error("Commentary text must not be empty");
     const p = await this.getPassage(passageId_);
@@ -93,6 +96,7 @@ export class GranthaStore {
       author,
       title,
       text,
+      simpleEn: typeof extra.simpleEn === "string" ? extra.simpleEn : "",
       createdAt: now,
       updatedAt: now,
     };
@@ -122,6 +126,7 @@ export class GranthaStore {
     }
     if (patch.author !== undefined) c.author = patch.author;
     if (patch.title !== undefined) c.title = patch.title;
+    if (patch.simpleEn !== undefined) c.simpleEn = patch.simpleEn;
     c.updatedAt = Date.now();
     await this.adapter.put("commentaries", c);
     return c;
@@ -196,10 +201,11 @@ export class GranthaStore {
     const target = await this.getScripture(targetId);
     if (!target) throw new Error(`Import failed: target scripture not found: ${targetId}`);
 
-    // Pre-validate all rows BEFORE writing anything (rollback guarantee)
+    // Pre-validate all rows BEFORE writing anything (rollback guarantee).
+    // A passage needs mula OR en (translation-only passages are legitimate).
     for (const p of parsed.passages) {
-      if (typeof p.mula !== "string" || !p.mula) {
-        report.errors.push("Skipped passage with empty mula");
+      if ((typeof p.mula !== "string" || !p.mula) && (typeof p.en !== "string" || !p.en)) {
+        report.errors.push("Skipped passage with neither mula nor en");
       }
       if (typeof p.section !== "string" && p.section !== undefined)
         throw new Error("Import failed: corrupt passage.section");
@@ -216,33 +222,39 @@ export class GranthaStore {
     // just-added passages so within-doc duplicates remap correctly.
     const existing = await this.listPassages(targetId);
     const known = existing.slice();
-    const mulaExact = new Set(existing.map((p) => p.mula));
-    const mulaNfc = new Set(existing.map((p) => p.mula.normalize("NFC")));
+    // fingerprint: mula, else en (translation-only passages)
+    const fp = (p) => (typeof p.mula === "string" && p.mula) || (typeof p.en === "string" && p.en) || "";
+    const mulaExact = new Set(existing.map(fp));
+    const mulaNfc = new Set(existing.map((p) => fp(p).normalize("NFC")));
 
-    const findKnown = (mula) =>
-      known.find((p) => p.mula === mula || p.mula.normalize("NFC") === mula.normalize("NFC"));
+    const findKnown = (key) =>
+      known.find((p) => fp(p) === key || fp(p).normalize("NFC") === key.normalize("NFC"));
 
     // Map source passage index -> target passage id (for commentary remap)
     const passageRemap = new Map();
 
     for (const src of parsed.passages) {
-      if (typeof src.mula !== "string" || !src.mula) continue; // already reported
-      if (mulaExact.has(src.mula) || mulaNfc.has(src.mula.normalize("NFC"))) {
+      const hasMula = typeof src.mula === "string" && !!src.mula;
+      const hasEn = typeof src.en === "string" && !!src.en;
+      if (!hasMula && !hasEn) continue; // already reported
+      const key = fp(src);
+      if (mulaExact.has(key) || mulaNfc.has(key.normalize("NFC"))) {
         report.skippedDuplicates += 1;
         // remap to passage with same text for commentary attach
-        const match = findKnown(src.mula);
+        const match = findKnown(key);
         if (match && src.id) passageRemap.set(src.id, match.id);
         continue;
       }
       const added = await this.addPassage(
         targetId,
-        src.mula,
-        typeof src.section === "string" ? src.section : ""
+        hasMula ? src.mula : "",
+        typeof src.section === "string" ? src.section : "",
+        { en: hasEn ? src.en : "", primaryEn: typeof src.primaryEn === "string" ? src.primaryEn : "" }
       );
       if (src.id) passageRemap.set(src.id, added.id);
       known.push(added);
-      mulaExact.add(src.mula);
-      mulaNfc.add(src.mula.normalize("NFC"));
+      mulaExact.add(key);
+      mulaNfc.add(key.normalize("NFC"));
       report.addedPassages += 1;
     }
 
@@ -269,7 +281,9 @@ export class GranthaStore {
         report.skippedCommentaryDuplicates += 1;
         continue;
       }
-      const addedC = await this.addCommentary(mapped, src.author ?? "Unknown", src.text, src.title ?? "");
+      const addedC = await this.addCommentary(mapped, src.author ?? "Unknown", src.text, src.title ?? "", {
+        simpleEn: typeof src.simpleEn === "string" ? src.simpleEn : "",
+      });
       sibs.push(addedC);
       sibMap.set(mapped, sibs);
       report.addedCommentaries += 1;
@@ -350,7 +364,7 @@ export class GranthaStore {
     const pIds = new Set(passages.map((p) => p.id));
     const orphanCommentaries = commentaries.filter((c) => !pIds.has(c.passageId)).map((c) => c.id);
     const orphanPassages = passages.filter((p) => !sIds.has(p.scriptureId)).map((p) => p.id);
-    const emptyMula = passages.filter((p) => !p.mula).map((p) => p.id);
+    const emptyMula = passages.filter((p) => !p.mula && !p.en).map((p) => p.id);
     const seen = new Map();
     const duplicateOrdinals = [];
     for (const p of passages) {
