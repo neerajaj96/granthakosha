@@ -31,6 +31,9 @@ scripture+ordinal / author), then seeded into the app.
       working EN + combined primaries, 23/23 attached ṭīkās simplified
       (`content/primary-batch-2.json`); `***` separator artifacts now dropped
       by the parser (51 noise lines)
+- [x] Batch 3 (translator's own): Devīkavaca (72) + Devīkīlaka incl.
+      Guru-kīlaka (52) — 124/124 working EN + combined primaries, 105/105
+      attached ṭīkās simplified (`content/primary-batch-3.json`)
 - [x] `src/lib/display.js` pure display plane + 4 tests; store carry-through
       (add/import/export round-trip) tested; search indexes EN planes too
 - [ ] Batches 2+: remaining 212 Tantraloka primaries, 2944 Saptashati primaries
