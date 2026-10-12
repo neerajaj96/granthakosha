@@ -43,6 +43,9 @@ scripture+ordinal / author), then seeded into the app.
       Siddhakuñjikā, Devyatharvaśīrṣa + Śaktirahasya — 183/183 working EN
       + combined primaries, 51/51 attached ṭīkās simplified
       (`content/primary-batch-5.json`)
+- [x] Batch 6a (translator's own): Adhyāya 1 front matter + story verses 1–23
+      (ordinals 419–531) — 113/113 working EN + combined primaries, 177/177
+      attached ṭīkās distilled to layman sense (`content/primary-batch-6a.json`)
 - [x] `src/lib/display.js` pure display plane + 4 tests; store carry-through
       (add/import/export round-trip) tested; search indexes EN planes too
 - [ ] Batches 2+: remaining 212 Tantraloka primaries, 2944 Saptashati primaries
