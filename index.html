@@ -13,6 +13,12 @@
   <a class="skip" href="#reader">Skip to reader</a>
   <header class="topbar">
     <div class="brand">GranthaKosha <small>ग्रन्थकोश</small></div>
+    <nav class="tabs" aria-label="Primary">
+      <button class="tab" data-view="reader" aria-current="page">Reader</button>
+      <button class="tab" data-view="workbench">Workbench</button>
+      <button class="tab" data-view="concepts">Concepts</button>
+      <button class="tab" data-view="study">Study</button>
+    </nav>
     <div class="spacer"></div>
     <label>Language
       <select id="lang" aria-label="Language">
@@ -22,9 +28,10 @@
     </label>
     <label>Theme
       <select id="theme" aria-label="Reading theme">
-        <option value="dark">Dark</option>
+        <option value="parchment">Parchment</option>
         <option value="light">Light</option>
         <option value="sepia">Sepia</option>
+        <option value="dark">Midnight</option>
       </select>
     </label>
     <label>Script
@@ -53,6 +60,7 @@
       <option value="tika">Ṭīkā</option>
     </select>
     <input id="author" type="text" placeholder="author…" aria-label="Filter by commentator" style="width:7em" />
+    <button id="settingsBtn" class="btn" aria-label="Open settings">⚙ Settings</button>
   </header>
   <div class="layout">
     <aside class="sidebar" aria-label="Library">
@@ -61,23 +69,6 @@
       <div class="row">
         <button id="loadFullBtn" class="btn">Load complete Durgāsaptaśatī</button>
       </div>
-      <h2 style="margin-top:1rem">Study</h2>
-      <div class="row">
-        <button id="conceptBtn" class="btn">Concepts</button>
-      </div>
-      <div id="studyList"></div>
-      <h2 style="margin-top:1rem">Workbench</h2>
-      <div class="row">
-        <select id="wbFrom" aria-label="Source script"></select>
-        <span aria-hidden="true">→</span>
-        <select id="wbTo" aria-label="Target script"></select>
-      </div>
-      <textarea id="wbIn" rows="3" placeholder="Paste text…" aria-label="Workbench input" style="margin:.4rem 0"></textarea>
-      <div class="row">
-        <button id="wbGo" class="btn primary">Convert</button>
-        <button id="wbCopy" class="btn">Copy</button>
-      </div>
-      <div id="wbOut" class="status" style="white-space:pre-wrap" aria-live="polite"></div>
       <h2 style="margin-top:1rem">Backup</h2>
       <div class="row">
         <button id="exportBtn" class="btn">Export JSON</button>
@@ -86,20 +77,133 @@
       <div class="status"><span class="kbd">j</span>/<span class="kbd">k</span> navigate · <span class="kbd">o</span> toggle · <span class="kbd">/</span> search · <span class="kbd">t</span> theme</div>
     </aside>
     <main class="reader" id="reader" aria-label="Reader">
-      <div id="readerHead"></div>
-      <div id="passages"></div>
-      <div id="status" class="status" role="status" aria-live="polite"></div>
+      <section id="view-reader" data-viewpanel="reader" aria-label="Reader">
+        <div id="readerHead"></div>
+        <div id="passages"></div>
+        <div id="status" class="status" role="status" aria-live="polite"></div>
+      </section>
+      <section id="view-workbench" data-viewpanel="workbench" aria-label="Workbench" hidden>
+        <div class="panel">
+          <h2 style="margin:.2rem 0">Transliteration workbench</h2>
+          <div class="row">
+            <select id="wbFrom" aria-label="Source script"></select>
+            <span aria-hidden="true">→</span>
+            <select id="wbTo" aria-label="Target script"></select>
+          </div>
+          <textarea id="wbIn" rows="4" placeholder="Paste text…" aria-label="Workbench input" style="margin:.4rem 0"></textarea>
+          <div class="row">
+            <button id="wbGo" class="btn primary">Convert</button>
+            <button id="wbCopy" class="btn">Copy</button>
+          </div>
+          <div id="wbOut" class="status" style="white-space:pre-wrap" aria-live="polite"></div>
+        </div>
+      </section>
+      <section id="view-concepts" data-viewpanel="concepts" aria-label="Concept explorer" hidden>
+        <div class="panel">
+          <h2 style="margin:.2rem 0">Darśana concepts</h2>
+          <input id="conceptFilter" type="search" placeholder="Filter concepts…" aria-label="Filter concepts" style="margin:.5rem 0; width:100%" />
+          <div id="conceptGrid"></div>
+        </div>
+      </section>
+      <section id="view-study" data-viewpanel="study" aria-label="Bookmarks and notes" hidden>
+        <div class="panel">
+          <h2 style="margin:.2rem 0">Bookmarks &amp; notes</h2>
+          <div id="studyList"></div>
+        </div>
+      </section>
     </main>
   </div>
   <script type="module" src="src/main.js"></script>
-  <dialog id="concepts" aria-label="Concept explorer">
+  <dialog id="settings-dialog" aria-label="Settings">
     <div class="row">
-      <h2 style="margin:0">Darśana concepts</h2>
+      <h2 style="margin:0">Settings</h2>
       <div class="spacer"></div>
-      <button id="conceptClose" class="btn" aria-label="Close concept explorer">✕</button>
+      <button id="settingsClose" class="btn" aria-label="Close settings">✕</button>
     </div>
-    <input id="conceptFilter" type="search" placeholder="Filter concepts…" aria-label="Filter concepts" style="margin:.5rem 0; width:100%" />
-    <div id="conceptGrid"></div>
+    <div class="settings-grid">
+      <div class="settings-tabs" role="tablist" aria-label="Settings categories">
+        <button role="tab" data-stab="script" aria-selected="true">Script</button>
+        <button role="tab" data-stab="reader" aria-selected="false">Reader</button>
+        <button role="tab" data-stab="speech" aria-selected="false">Speech</button>
+        <button role="tab" data-stab="data" aria-selected="false">Data</button>
+      </div>
+      <div class="settings-body">
+        <section data-spanel="script" role="tabpanel" aria-label="Script and transliteration">
+          <label>Primary script
+            <select id="setScript" aria-label="Primary script">
+              <option value="deva">Devanagari</option>
+              <option value="iast">IAST</option>
+              <option value="iso15919">ISO 15919</option>
+              <option value="bengali">Bengali</option>
+              <option value="telugu">Telugu</option>
+              <option value="kannada">Kannada</option>
+              <option value="malayalam">Malayalam</option>
+            </select>
+          </label>
+          <label>Dual-script subtitle
+            <select id="setDual" aria-label="Dual script subtitle">
+              <option value="">Off</option>
+              <option value="deva">Devanagari</option>
+              <option value="iast">IAST</option>
+              <option value="iso15919">ISO 15919</option>
+              <option value="bengali">Bengali</option>
+              <option value="telugu">Telugu</option>
+              <option value="kannada">Kannada</option>
+              <option value="malayalam">Malayalam</option>
+            </select>
+          </label>
+          <label class="check"><input id="setAutoNote" type="checkbox" /> Show my notes in the primary script</label>
+          <p class="status">Notes are stored exactly as typed; only their display is converted.</p>
+        </section>
+        <section data-spanel="reader" role="tabpanel" aria-label="Reader typography and layout" hidden>
+          <label>Sanskrit size <span id="sansVal" class="status"></span>
+            <input id="setSans" type="range" min="0.8" max="2.2" step="0.05" aria-label="Sanskrit font scaling" />
+          </label>
+          <label>Translation size <span id="bodyVal" class="status"></span>
+            <input id="setBody" type="range" min="0.8" max="1.5" step="0.05" aria-label="Translation font scaling" />
+          </label>
+          <label>Theme
+            <select id="setTheme" aria-label="Theme preset">
+              <option value="parchment">Parchment</option>
+              <option value="light">Light</option>
+              <option value="sepia">Sepia</option>
+              <option value="dark">Midnight</option>
+            </select>
+          </label>
+          <label class="check"><input id="setPadas" type="checkbox" /> Show pada breakdown by default</label>
+          <label class="check"><input id="setAnvaya" type="checkbox" /> Show anvaya (prose order, heuristic)</label>
+          <label>Commentaries
+            <select id="setTikas" aria-label="Commentary display mode">
+              <option value="accordion">Accordion stack</option>
+              <option value="split">Side-by-side split</option>
+            </select>
+          </label>
+        </section>
+        <section data-spanel="speech" role="tabpanel" aria-label="Speech and audio" hidden>
+          <div role="radiogroup" aria-label="Speech speed">
+            <label class="check"><input type="radio" name="srate" value="0.75" /> 0.75x</label>
+            <label class="check"><input type="radio" name="srate" value="1" /> 1.0x</label>
+            <label class="check"><input type="radio" name="srate" value="1.25" /> 1.25x</label>
+            <label class="check"><input type="radio" name="srate" value="1.5" /> 1.5x</label>
+          </div>
+          <label>Voice
+            <select id="setVoice" aria-label="Speech voice"><option value="">System default</option></select>
+          </label>
+          <label class="check"><input id="setKaraoke" type="checkbox" /> Karaoke word highlight</label>
+        </section>
+        <section data-spanel="data" role="tabpanel" aria-label="Data and backup" hidden>
+          <div id="corpusStatus" class="status" style="white-space:pre-wrap"></div>
+          <div class="row">
+            <button id="backupExport" class="btn">Export bookmarks &amp; notes</button>
+            <label class="btn">Import <input id="backupImport" type="file" accept="application/json" hidden /></label>
+          </div>
+          <div id="backupStatus" class="status" role="status" aria-live="polite"></div>
+          <div class="row">
+            <button id="prefsReset" class="btn">Reset preferences</button>
+          </div>
+        </section>
+      </div>
+    </div>
   </dialog>
   <div id="overlay" hidden></div>
   <aside id="drawer" aria-label="Focused commentary" hidden>

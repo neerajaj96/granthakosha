@@ -27,6 +27,10 @@ maintainer batches: `content/primary-batch-N.json` merged by
 scripture+ordinal / author), then seeded into the app.
 
 ## M1 — Vertical slice [Implemented] [Tested]
+- [x] Scripture entity, exact Mūla persistence, independent commentaries,
+      per-card expand/collapse, reload restore, append-only growth, unicode +
+      import/export integrity tests, full reader chrome (themes, Deva/IAST,
+      responsive, gestures, shortcuts, PWA)
 
 ## Reader engine 2.0 [Implemented] [Tested]
 - [x] Multi-script switcher: Devanāgarī, IAST, ISO 15919, Bengali, Telugu,
@@ -43,10 +47,20 @@ scripture+ordinal / author), then seeded into the app.
       links stable across installs; full-corpus on-demand loader (4 MB) with
       ordinal-preserving import so links never rot
 - [x] Ordinal-preserving fresh import (tested); seed retitled + migrated
-- [x] Scripture entity, exact Mūla persistence, independent commentaries,
-      per-card expand/collapse, reload restore, append-only growth, unicode +
-      import/export integrity tests, full reader chrome (themes, Deva/IAST,
-      responsive, gestures, shortcuts, PWA)
+
+## Navigation + Settings system [Implemented] [Tested]
+- [x] Header tabs (Reader / Workbench / Concepts / Study) with hash routes;
+      sidebar slimmed to scriptures + loader + backup
+- [x] `src/lib/settings.js`: reactive proxy store + event bus + localStorage,
+      legacy `gk:ui:v1` migration, factory reset, backup validate/build;
+      10 store/backup tests
+- [x] Settings `<dialog>` with 4 tabs: Script (primary + dual-script subtitle
+      + note auto-convert preview), Reader (Sanskrit 0.8–2.2 + body 0.8–1.5
+      scales, 4 themes incl. new Parchment, padas/anvaya defaults, accordion
+      vs split ṭīkās), Speech (0.75–1.5x, Sanskrit/Indian voice picker,
+      karaoke toggle), Data (corpus+ordinal status, backup export/import with
+      validation, prefs reset keeping notes)
+- [x] `src/lib/pada.js`: honest heuristic tokens + anvaya line + tests
 
 ## Content model — Simple English everywhere [Implemented] [Tested]
 - [x] `Passage.en` (literal translation) + `Passage.primaryEn` (ONE combined

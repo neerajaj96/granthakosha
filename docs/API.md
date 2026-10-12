@@ -70,6 +70,17 @@ Bengali, Telugu, Kannada, Malayalam (Deva pivot; Brahmic by block offset;
 IAST↔Deva parser both ways). Malayalam RRA/chillu + Bengali va quirks
 handled + tested. Grantha omitted (unverifiable offline).
 
+## Settings (`src/lib/settings.js`) + Pada (`src/lib/pada.js`)
+
+Reactive proxy store + event bus + localStorage (memory backend for tests),
+legacy migration, factory reset, backup validate/build. Pada = honest
+heuristic tokens + anvaya line (no sandhi analysis, no tags — by design).
+
+`transliterateText(text, from, to)` over Devanāgarī, IAST, ISO-15919,
+Bengali, Telugu, Kannada, Malayalam (Deva pivot; Brahmic by block offset;
+IAST↔Deva parser both ways). Malayalam RRA/chillu + Bengali va quirks
+handled + tested. Grantha omitted (unverifiable offline).
+
 ## Display plane (`src/lib/display.js`)
 
 `renderText(s, en, lang, script)` / `tikaDisplayText(c, lang, script)` —

@@ -36,6 +36,11 @@ append new material without losing data or corrupting line mappings.
 - Pada tokens, one-click verse+translation+citation copy, bookmarks + notes, verse audio (device TTS, 3 speeds)
 - Concept explorer (24 terms, corpus-computed links) + on-demand complete-text loader
 
+## Navigation + settings
+
+- Header tabs (Reader / Workbench / Concepts / Study) + universal settings dialog (Script, Reader, Speech, Data tabs)
+- Dual-script subtitles, font scales, 4 themes, accordion/split ṭīkās, voice picker, backup export/import
+
 - Reader: ṭīkā focus drawer, line-height + font-size + theme + script controls.
 - Corpus pipeline: `node tools/parse-corpus.mjs` parses the 23k-line source into
   2944 passages + 4550 ṭīkās (`corpus/durgasaptashati.json`); browser import

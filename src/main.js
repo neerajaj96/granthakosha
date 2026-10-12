@@ -4,9 +4,11 @@ import { SEED_TITLE, SEED_SUBTITLE, SEED_PASSAGES } from "./lib/seed.js";
 import { devaToIast } from "./lib/iast.js";
 import { searchFold } from "./lib/unicode.js";
 import { buildIndex, search, highlight, tokenize } from "./lib/search.js";
-import { renderText as renderTextLib, tikaDisplayText as tikaDisplayLib } from "./lib/display.js";
+import { renderText as renderTextLib, tikaDisplayText as tikaDisplayLib, HAS_DEVA } from "./lib/display.js";
 import { transliterateText, SCRIPTS } from "./lib/transliterate.js";
 import { CONCEPTS } from "./lib/concepts.js";
+import { loadSettings, createStore, factoryDefaults, validateBackup, buildBackup } from "./lib/settings.js";
+import { padaTokens, anvayaLine } from "./lib/pada.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -24,25 +26,11 @@ function makeAdapter() {
 
 const store = new GranthaStore(makeAdapter());
 
-// ---------- persisted UI state ----------
-const UI_KEY = "gk:ui:v1";
-function loadUI() {
-  const def = { expanded: {}, theme: "dark", script: "deva", lang: "sa", fontSize: 19, lineHeight: 2, ttsRate: 1 };
-  try {
-    const raw = localStorage.getItem(UI_KEY);
-    if (raw) return { ...def, ...JSON.parse(raw) };
-  } catch {
-    /* ignore */
-  }
-  return def;
-}
-const ui = loadUI();
+// ---------- persisted UI state (reactive store + legacy migration) ----------
+const _store = createStore(loadSettings());
+const ui = _store.state;
 function saveUI() {
-  try {
-    localStorage.setItem(UI_KEY, JSON.stringify(ui));
-  } catch {
-    /* ignore */
-  }
+  _store.save();
 }
 
 // ---------- plain viewing mode: no roles, no editing UI.
@@ -238,9 +226,38 @@ async function renderReader() {
     meta.textContent = metaText;
     const mula = document.createElement("div");
     mula.className = "mula";
+    mula.dataset.field = "mula";
     const mulaShown = renderText(p.mula, p.en);
     if (q) mula.innerHTML = highlight(mulaShown, q);
     else mula.textContent = mulaShown;
+
+    // Dual-script subtitle (primary script + second line)
+    if (ui.lang === "sa" && ui.dual && ui.dual !== ui.script && HAS_DEVA.test(p.mula || "")) {
+      const sub = document.createElement("div");
+      sub.className = "meta dualsub";
+      try {
+        sub.textContent = transliterateText(p.mula, "deva", ui.dual);
+      } catch {
+        sub.textContent = "";
+      }
+      mula.appendChild(sub);
+    }
+
+    // Anvaya (prose order, heuristic) — opt-in via settings
+    if (ui.showAnvaya && HAS_DEVA.test(p.mula || "")) {
+      const an = document.createElement("div");
+      an.className = "meta anvaya";
+      let line = anvayaLine(p.mula);
+      if (ui.lang === "sa" && ui.script !== "deva") {
+        try {
+          line = transliterateText(line, "deva", ui.script);
+        } catch {
+          /* keep */
+        }
+      }
+      an.textContent = `Anvaya (prose order, heuristic): ${line}`;
+      mula.appendChild(an);
+    }
 
     // PRIMARY: our combined explanation, right below the verse
     let primary = null;
@@ -319,14 +336,22 @@ async function renderReader() {
     const padas = document.createElement("button");
     padas.className = "btn";
     padas.textContent = "Padas";
-    padas.setAttribute("aria-expanded", "false");
     padas.setAttribute("aria-label", `Show word tokens for passage ${p.ordinal}`);
     const padaBox = document.createElement("div");
+    const fillPadas = () => {
+      padaBox.innerHTML = "";
+      padaBox.appendChild(padaTable(p));
+    };
+    const syncPadas = () => padas.setAttribute("aria-expanded", String(padaBox.childElementCount > 0));
+    syncPadas();
+    if (ui.showPadas && HAS_DEVA.test(p.mula || "")) {
+      fillPadas();
+      syncPadas();
+    }
     padas.onclick = () => {
-      const open = padaBox.childElementCount === 0;
-      padas.setAttribute("aria-expanded", String(open));
-      if (open) padaBox.appendChild(padaTable(p));
+      if (padaBox.childElementCount === 0) fillPadas();
       else padaBox.innerHTML = "";
+      syncPadas();
     };
     actions.appendChild(padas);
 
@@ -523,6 +548,17 @@ async function refreshStudy() {
       setNote(pid, note.value.trim());
       void refreshStudy();
     };
+    row.append(go, note);
+    if (ui.autoNoteScript && study[pid].note) {
+      const prev = document.createElement("div");
+      prev.className = "status";
+      try {
+        prev.textContent = `In ${ui.script}: ${transliterateText(study[pid].note, "deva", ui.script)}`;
+      } catch {
+        prev.textContent = study[pid].note;
+      }
+      row.appendChild(prev);
+    }
     const del = document.createElement("button");
     del.className = "btn";
     del.textContent = "✕";
@@ -566,14 +602,6 @@ async function gotoPassage(title, ordinal) {
       el.focus({ preventScroll: true });
     }
   });
-}
-
-/** Heuristic pada tokens: whitespace/punctuation split (no sandhi analysis — labeled as such). */
-export function padaTokens(mula) {
-  return String(mula || "")
-    .split(/[\s।॥|]+/)
-    .map((t) => t.trim())
-    .filter(Boolean);
 }
 
 function padaTable(p) {
@@ -654,10 +682,19 @@ function speakPassage(p, mulaEl) {
     const u = new SpeechSynthesisUtterance(text);
     u.lang = ui.lang === "en" ? "en-IN" : "sa-IN";
     u.rate = Number(ui.ttsRate || 1);
-    // best-effort word highlight (Chromium boundary events)
+    try {
+      const voices = speechSynthesis.getVoices ? speechSynthesis.getVoices() : [];
+      const want = voices.find((v) => v.name === ui.ttsVoice) ||
+        voices.find((v) => (v.lang || "").toLowerCase().startsWith(ui.lang === "en" ? "en" : "sa"));
+      if (ui.ttsVoice && want && want.name === ui.ttsVoice) u.voice = want;
+      else if (!ui.ttsVoice && want && ui.lang !== "en") u.voice = want;
+    } catch {
+      /* ignore */
+    }
+    // karaoke word highlight (Chromium boundary events; toggle in settings)
     const words = text.split(/\s+/).filter(Boolean);
     let plain = null;
-    if (mulaEl && !($("search").value.trim())) {
+    if (mulaEl && !($("search").value.trim()) && ui.karaoke !== false) {
       plain = mulaEl.innerHTML;
       mulaEl.innerHTML = words.map((w) => `<span class="w">${w.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</span>`).join(" ");
     }
@@ -688,6 +725,231 @@ function speakPassage(p, mulaEl) {
   }
 }
 
+// ---------- tab views ----------
+const VIEWS = ["reader", "workbench", "concepts", "study"];
+function viewFromHash() {
+  const h = (location.hash || "").replace("#/", "");
+  return VIEWS.includes(h) ? h : "reader";
+}
+function initialView() {
+  return viewFromHash();
+}
+function setView(name) {
+  const v = VIEWS.includes(name) ? name : "reader";
+  for (const sec of document.querySelectorAll("[data-viewpanel]")) {
+    sec.hidden = sec.dataset.viewpanel !== v;
+  }
+  for (const t of document.querySelectorAll(".tab")) {
+    if (t.dataset.view === v) t.setAttribute("aria-current", "page");
+    else t.removeAttribute("aria-current");
+  }
+  if (location.hash !== `#/${v}`) history.replaceState(null, "", `#/${v}`);
+  if (v === "concepts") renderConcepts($("conceptFilter") ? $("conceptFilter").value : "");
+  if (v === "study") void refreshStudy();
+}
+
+// ---------- settings dialog ----------
+function settingsTab(name) {
+  for (const t of document.querySelectorAll("#settings-dialog [data-stab]")) {
+    t.setAttribute("aria-selected", String(t.dataset.stab === name));
+  }
+  for (const p of document.querySelectorAll("#settings-dialog [data-spanel]")) {
+    p.hidden = p.dataset.spanel !== name;
+  }
+}
+
+function refreshVoices() {
+  const sel = $("setVoice");
+  if (!sel || !("speechSynthesis" in window)) return;
+  const cur = ui.ttsVoice || "";
+  sel.innerHTML = '<option value="">System default</option>';
+  let voices = [];
+  try {
+    voices = speechSynthesis.getVoices() || [];
+  } catch {
+    /* ignore */
+  }
+  const sa = voices.filter((v) => /^sa([-_]|$)/i.test(v.lang || ""));
+  const indian = voices.filter((v) => /en[-_]IN|hi|bn|te|ta|kn|ml|mr|gu|pa/i.test(v.lang || ""));
+  const rest = voices.filter((v) => !sa.includes(v) && !indian.includes(v));
+  const group = (label, list) => {
+    if (!list.length) return;
+    const g = document.createElement("optgroup");
+    g.label = label;
+    for (const v of list) {
+      const o = document.createElement("option");
+      o.value = v.name;
+      o.textContent = `${v.name} (${v.lang})`;
+      g.appendChild(o);
+    }
+    sel.appendChild(g);
+  };
+  group("Sanskrit", sa);
+  group("Indian", indian);
+  group("Other", rest.slice(0, 30));
+  sel.value = cur;
+}
+
+async function refreshCorpusStatus() {
+  const box = $("corpusStatus");
+  if (!box) return;
+  try {
+    const all = await store.listScriptures();
+    const lines = [];
+    for (const s of all) {
+      const ps = await store.listPassages(s.id);
+      const ts = await store.listCommentariesForScripture(s.id);
+      const ords = ps.map((p) => p.ordinal);
+      const range = ords.length ? `${Math.min(...ords)}–${Math.max(...ords)}` : "—";
+      lines.push(`${s.title}: ${ps.length} verses (ordinals ${range}), ${ts.length} ṭīkās`);
+    }
+    box.textContent = lines.join("\n") || "No corpora loaded.";
+  } catch (e) {
+    box.textContent = `Status failed: ${e.message || e}`;
+  }
+}
+
+function syncSettingsControls() {
+  $("setScript").value = ui.script;
+  $("setDual").value = ui.dual || "";
+  $("setAutoNote").checked = !!ui.autoNoteScript;
+  $("setSans").value = String(ui.sanskritScale ?? 1.15);
+  $("sansVal").textContent = `${Math.round((ui.sanskritScale ?? 1.15) * 100)}%`;
+  $("setBody").value = String(ui.bodyScale ?? 1);
+  $("bodyVal").textContent = `${Math.round((ui.bodyScale ?? 1) * 100)}%`;
+  $("setTheme").value = ui.theme;
+  $("setPadas").checked = !!ui.showPadas;
+  $("setAnvaya").checked = !!ui.showAnvaya;
+  $("setTikas").value = ui.tikaMode || "accordion";
+  for (const r of document.querySelectorAll('input[name="srate"]')) {
+    r.checked = Number(r.value) === Number(ui.ttsRate || 1);
+  }
+  $("setVoice").value = ui.ttsVoice || "";
+  $("setKaraoke").checked = ui.karaoke !== false;
+  $("ttsrate").value = String(ui.ttsRate || 1);
+}
+
+function wireSettings() {
+  for (const t of document.querySelectorAll("#settings-dialog [data-stab]")) {
+    t.onclick = () => settingsTab(t.dataset.stab);
+  }
+  $("settingsClose").onclick = () => $("settings-dialog").close();
+  $("setScript").onchange = (e) => {
+    ui.script = e.target.value;
+    saveUI();
+    applyPrefs();
+    void renderReader();
+  };
+  $("setDual").onchange = (e) => {
+    ui.dual = e.target.value || null;
+    saveUI();
+    void renderReader();
+  };
+  $("setAutoNote").onchange = (e) => {
+    ui.autoNoteScript = e.target.checked;
+    saveUI();
+    void refreshStudy();
+  };
+  const scales = () => {
+    ui.sanskritScale = Number($("setSans").value);
+    ui.bodyScale = Number($("setBody").value);
+    saveUI();
+    applyPrefs();
+    $("sansVal").textContent = `${Math.round(ui.sanskritScale * 100)}%`;
+    $("bodyVal").textContent = `${Math.round(ui.bodyScale * 100)}%`;
+  };
+  $("setSans").oninput = scales;
+  $("setBody").oninput = scales;
+  $("setTheme").onchange = (e) => {
+    ui.theme = e.target.value;
+    saveUI();
+    withTransition(applyPrefs);
+  };
+  $("setPadas").onchange = (e) => {
+    ui.showPadas = e.target.checked;
+    saveUI();
+    void renderReader();
+  };
+  $("setAnvaya").onchange = (e) => {
+    ui.showAnvaya = e.target.checked;
+    saveUI();
+    void renderReader();
+  };
+  $("setTikas").onchange = (e) => {
+    ui.tikaMode = e.target.value;
+    saveUI();
+    applyPrefs();
+  };
+  for (const r of document.querySelectorAll('input[name="srate"]')) {
+    r.onchange = () => {
+      ui.ttsRate = Number(document.querySelector('input[name="srate"]:checked').value);
+      saveUI();
+      applyPrefs();
+    };
+  }
+  $("setVoice").onchange = (e) => {
+    ui.ttsVoice = e.target.value;
+    saveUI();
+  };
+  if ("speechSynthesis" in window) {
+    try {
+      speechSynthesis.onvoiceschanged = () => refreshVoices();
+    } catch {
+      /* ignore */
+    }
+  }
+  $("setKaraoke").onchange = (e) => {
+    ui.karaoke = e.target.checked;
+    saveUI();
+  };
+  $("backupExport").onclick = async () => {
+    const blob = new Blob([JSON.stringify(buildBackup(study), null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "granthakosha_backup.json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+    $("backupStatus").textContent = "Bookmarks & notes exported.";
+  };
+  $("backupImport").onchange = async (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    try {
+      const doc = JSON.parse(await f.text());
+      const incoming = validateBackup(doc);
+      const n = Object.keys(incoming).length;
+      study = { ...study, ...incoming };
+      saveStudy();
+      await refreshStudy();
+      await renderReader();
+      $("backupStatus").textContent = `Imported ${n} bookmark/note entr${n === 1 ? "y" : "ies"} (merged, ordinals preserved).`;
+    } catch (err) {
+      $("backupStatus").textContent = `Import failed safely (nothing changed): ${String(err.message || err)}`;
+    }
+    e.target.value = "";
+  };
+  $("prefsReset").onclick = async () => {
+    if (!confirm("Reset preferences to defaults? Notes and bookmarks are kept.")) return;
+    const keepExpanded = ui.expanded;
+    const fresh = factoryDefaults();
+    for (const k of Object.keys(fresh)) ui[k] = fresh[k];
+    ui.expanded = keepExpanded;
+    saveUI();
+    applyPrefs();
+    syncSettingsControls();
+    await renderReader();
+    say("Preferences reset.");
+  };
+}
+
+function openSettings() {
+  syncSettingsControls();
+  refreshVoices();
+  void refreshCorpusStatus();
+  settingsTab("script");
+  $("settings-dialog").showModal();
+}
+
 // ---------- events ----------
 function applyPrefs() {
   document.documentElement.dataset.theme = ui.theme;
@@ -700,6 +962,9 @@ function applyPrefs() {
   $("ttsrate").value = String(ui.ttsRate || 1);
   document.documentElement.style.setProperty("--font-size", `${ui.fontSize}px`);
   document.documentElement.style.setProperty("--line-height", String(ui.lineHeight));
+  document.documentElement.style.setProperty("--sanskrit-scale", String(ui.sanskritScale ?? 1.15));
+  document.documentElement.style.setProperty("--body-scale", String(ui.bodyScale ?? 1));
+  document.body.dataset.tikaMode = ui.tikaMode || "accordion";
 }
 
 async function boot() {
@@ -778,9 +1043,10 @@ async function boot() {
     say((await copyText($("wbOut").textContent)) ? "Workbench output copied." : "Copy failed.");
   };
 
-  // concepts dialog
+  // concepts view (in main tabs now, not a dialog)
   const renderConcepts = (filter = "") => {
     const grid = $("conceptGrid");
+    if (!grid) return;
     grid.innerHTML = "";
     const qf = filter.trim().toLowerCase();
     for (const c of CONCEPTS) {
@@ -798,7 +1064,7 @@ async function boot() {
         b.className = "btn s-item";
         b.textContent = `${l.scripture} §${l.section} #${l.ordinal}`;
         b.onclick = () => {
-          $("concepts").close();
+          setView("reader");
           gotoPassage(l.scripture, l.ordinal);
         };
         card.appendChild(b);
@@ -807,14 +1073,21 @@ async function boot() {
     }
     if (!grid.childElementCount) grid.innerHTML = '<div class="status">No concepts match.</div>';
   };
-  $("conceptBtn").onclick = () => {
-    renderConcepts();
-    $("conceptFilter").value = "";
-    $("concepts").showModal();
-    $("conceptFilter").focus();
-  };
   $("conceptFilter").oninput = (e) => renderConcepts(e.target.value);
-  $("conceptClose").onclick = () => $("concepts").close();
+
+  // tab navigation (header tabs + hash)
+  setView(initialView());
+  for (const t of document.querySelectorAll(".tab")) {
+    t.onclick = () => setView(t.dataset.view);
+  }
+  window.addEventListener("hashchange", () => setView(viewFromHash()));
+
+  // settings dialog
+  wireSettings();
+
+  // settings dialog
+  wireSettings();
+  $("settingsBtn").onclick = () => openSettings();
 
   $("loadFullBtn").onclick = (e) => void loadCompleteCorpus(e.target);
 
@@ -870,7 +1143,8 @@ async function boot() {
       e.preventDefault();
       $("search").focus();
     } else if (e.key === "t") {
-      ui.theme = ui.theme === "dark" ? "light" : ui.theme === "light" ? "sepia" : "dark";
+      const order = ["dark", "sepia", "parchment", "light"];
+      ui.theme = order[(order.indexOf(ui.theme) + 1) % order.length] || "dark";
       saveUI();
       withTransition(applyPrefs);
     }
