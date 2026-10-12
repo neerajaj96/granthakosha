@@ -34,6 +34,10 @@ scripture+ordinal / author), then seeded into the app.
 - [x] Batch 3 (translator's own): Devīkavaca (72) + Devīkīlaka incl.
       Guru-kīlaka (52) — 124/124 working EN + combined primaries, 105/105
       attached ṭīkās simplified (`content/primary-batch-3.json`)
+- [x] Batch 4 (translator's own): three Rahasyas — Prādhāna (41) + Vaikṛta
+      (44) + Mūrti incl. colophon & pardon verses (45) — 130/130 working EN
+      + combined primaries, 63/63 attached ṭīkās simplified
+      (`content/primary-batch-4.json`)
 - [x] `src/lib/display.js` pure display plane + 4 tests; store carry-through
       (add/import/export round-trip) tested; search indexes EN planes too
 - [ ] Batches 2+: remaining 212 Tantraloka primaries, 2944 Saptashati primaries
