@@ -4,8 +4,8 @@
  * verse + ALL its commentaries), and layman renderings of each tika (simpleEn).
  */
 
-export const SEED_TITLE = "Durgāsaptaśatī";
-export const SEED_SUBTITLE = "Guptavatyādi-sapta-ṭīkā-saṃvalitā (seed from Google Doc)";
+export const SEED_TITLE = "Durgāsaptaśatī · Seed Verses";
+export const SEED_SUBTITLE = "Six-verse starter selection (the complete text loads separately)";
 
 export const SEED_PASSAGES = [
   {

@@ -5,6 +5,8 @@ import { devaToIast } from "./lib/iast.js";
 import { searchFold } from "./lib/unicode.js";
 import { buildIndex, search, highlight, tokenize } from "./lib/search.js";
 import { renderText as renderTextLib, tikaDisplayText as tikaDisplayLib } from "./lib/display.js";
+import { transliterateText, SCRIPTS } from "./lib/transliterate.js";
+import { CONCEPTS } from "./lib/concepts.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -25,7 +27,7 @@ const store = new GranthaStore(makeAdapter());
 // ---------- persisted UI state ----------
 const UI_KEY = "gk:ui:v1";
 function loadUI() {
-  const def = { expanded: {}, theme: "dark", script: "deva", lang: "sa", fontSize: 19, lineHeight: 2 };
+  const def = { expanded: {}, theme: "dark", script: "deva", lang: "sa", fontSize: 19, lineHeight: 2, ttsRate: 1 };
   try {
     const raw = localStorage.getItem(UI_KEY);
     if (raw) return { ...def, ...JSON.parse(raw) };
@@ -91,6 +93,59 @@ async function ensureTantraloka() {
     say("Tantrāloka Ch. 1 loaded.");
   } catch {
     /* offline/file mode — reader works with bundled seed */
+  }
+}
+
+// Migrate very old seed installs titled exactly "Durgāsaptaśatī".
+async function migrateSeedTitle() {
+  const all = await store.listScriptures();
+  for (const s of all) {
+    if (s.title !== "Durgāsaptaśatī") continue;
+    const ps = await store.listPassages(s.id);
+    if (ps.length <= 10) {
+      s.title = "Durgāsaptaśatī · Seed Verses";
+      s.subtitle = "Six-verse starter selection (the complete text loads separately)";
+      s.updatedAt = Date.now();
+      await store.adapter.put("scriptures", s);
+    }
+  }
+}
+
+// Load the complete Durgāsaptaśatī (4 MB) on demand — user-initiated.
+async function loadCompleteCorpus(btn) {
+  const all = await store.listScriptures();
+  const existing = all.find((s) => s.title === "Durgāsaptaśatī" && s.id);
+  if (existing) {
+    const n = (await store.listPassages(existing.id)).length;
+    if (n > 100) {
+      await selectScripture(existing.id);
+      say("Complete text already loaded.");
+      return;
+    }
+  }
+  try {
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = "Loading…";
+    }
+    say("Loading complete Durgāsaptaśatī (one-time, ~4 MB)…");
+    const res = await fetch("corpus/durgasaptashati.json");
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const doc = await res.json();
+    const rep = await store.importAppend(doc);
+    searchCache.key = "";
+    await refreshSidebar();
+    const now = await store.listScriptures();
+    const full = now.find((s) => s.title === "Durgāsaptaśatī");
+    if (full) await selectScripture(full.id);
+    say(`Complete text loaded: +${rep.addedPassages} passages, +${rep.addedCommentaries} ṭīkās.`);
+  } catch (e) {
+    say(`Load failed: ${String(e.message || e)}`);
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "Load complete Durgāsaptaśatī";
+    }
   }
 }
 
@@ -230,9 +285,56 @@ async function renderReader() {
     focus.onclick = () => openDrawer(p.id);
     actions.appendChild(focus);
 
+    const mark = document.createElement("button");
+    mark.className = "btn";
+    const paintMark = () => { mark.textContent = isMarked(p.id) ? "★ Saved" : "☆ Save"; };
+    paintMark();
+    mark.setAttribute("aria-label", `Bookmark passage ${p.ordinal}`);
+    mark.onclick = () => {
+      toggleMark(p.id);
+      if (study[p.id]) {
+        study[p.id].label = `${current ? current.title : ""} §${p.section || "—"} #${p.ordinal}`;
+        study[p.id].ref = { title: current ? current.title : "", ordinal: p.ordinal };
+      }
+      saveStudy();
+      paintMark();
+      void refreshStudy();
+    };
+    actions.appendChild(mark);
+
+    const speak = document.createElement("button");
+    speak.className = "btn";
+    speak.textContent = "🔊 Listen";
+    speak.setAttribute("aria-label", `Listen to passage ${p.ordinal}`);
+    speak.onclick = () => speakPassage(p, mula);
+    actions.appendChild(speak);
+
+    const copy = document.createElement("button");
+    copy.className = "btn";
+    copy.textContent = "⧉ Copy";
+    copy.setAttribute("aria-label", `Copy passage ${p.ordinal} with translation and citation`);
+    copy.onclick = () => copyPassage(p);
+    actions.appendChild(copy);
+
+    const padas = document.createElement("button");
+    padas.className = "btn";
+    padas.textContent = "Padas";
+    padas.setAttribute("aria-expanded", "false");
+    padas.setAttribute("aria-label", `Show word tokens for passage ${p.ordinal}`);
+    const padaBox = document.createElement("div");
+    padas.onclick = () => {
+      const open = padaBox.childElementCount === 0;
+      padas.setAttribute("aria-expanded", String(open));
+      if (open) padaBox.appendChild(padaTable(p));
+      else padaBox.innerHTML = "";
+    };
+    actions.appendChild(padas);
+
     card.append(meta, mula);
     if (primary) card.appendChild(primary);
-    card.append(tikas, actions);
+    card.append(tikas, actions, padaBox);
+    card.dataset.ordinal = String(p.ordinal);
+    if (p.id) card.dataset.pid = p.id;
     box.appendChild(card);
   });
 }
@@ -359,6 +461,233 @@ function closeDrawer() {
   drawerReturnFocus = null;
 }
 
+// ---------- study aids: bookmarks, notes, pada tokens, copy, speech ----------
+const STUDY_KEY = "gk:study:v1";
+function loadStudy() {
+  try {
+    return JSON.parse(localStorage.getItem(STUDY_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+let study = loadStudy();
+function saveStudy() {
+  try {
+    localStorage.setItem(STUDY_KEY, JSON.stringify(study));
+  } catch {
+    /* ignore */
+  }
+}
+const isMarked = (pid) => !!(study[pid] && study[pid].mark);
+function toggleMark(pid) {
+  study[pid] = study[pid] || {};
+  study[pid].mark = !study[pid].mark;
+  if (!study[pid].mark && !study[pid].note) delete study[pid];
+  saveStudy();
+}
+function setNote(pid, note) {
+  study[pid] = study[pid] || {};
+  if (note) study[pid].note = note;
+  else delete study[pid].note;
+  if (!study[pid].mark && !study[pid].note) delete study[pid];
+  saveStudy();
+}
+
+async function refreshStudy() {
+  const box = $("studyList");
+  if (!box) return;
+  box.innerHTML = "";
+  const ids = Object.keys(study).filter((id) => study[id].mark || study[id].note);
+  if (ids.length === 0) {
+    box.innerHTML = '<div class="status">No bookmarks yet — ☆ any verse.</div>';
+    return;
+  }
+  for (const pid of ids) {
+    const row = document.createElement("div");
+    row.className = "panel";
+    row.style.margin = ".4rem 0";
+    row.style.padding = ".5rem .7rem";
+    const go = document.createElement("button");
+    go.className = "btn s-item";
+    go.textContent = `${study[pid].mark ? "★ " : ""}${study[pid].label || pid}`;
+    go.onclick = () => {
+      const ref = study[pid].ref;
+      if (ref) gotoPassage(ref.title, ref.ordinal);
+    };
+    const note = document.createElement("textarea");
+    note.rows = 2;
+    note.placeholder = "My note…";
+    note.value = study[pid].note || "";
+    note.setAttribute("aria-label", `Note for ${study[pid].label || pid}`);
+    note.onchange = () => {
+      setNote(pid, note.value.trim());
+      void refreshStudy();
+    };
+    const del = document.createElement("button");
+    del.className = "btn";
+    del.textContent = "✕";
+    del.setAttribute("aria-label", "Remove bookmark");
+    del.onclick = () => {
+      delete study[pid];
+      saveStudy();
+      void refreshStudy();
+      void renderReader();
+    };
+    row.append(go, note, del);
+    box.appendChild(row);
+  }
+}
+
+async function gotoPassage(title, ordinal) {
+  // Resolve by (title, ordinal): stable across installs (ids are random).
+  // On duplicate titles prefer the scripture holding most passages.
+  const all = await store.listScriptures();
+  const cands = all.filter((s) => s.title === title);
+  if (cands.length === 0) {
+    say(`Scripture not loaded: ${title}.`);
+    return;
+  }
+  let best = null;
+  let bestN = -1;
+  for (const s of cands) {
+    const ps = await store.listPassages(s.id);
+    const hit = ps.some((p) => p.ordinal === ordinal);
+    if (hit && ps.length > bestN) {
+      best = s;
+      bestN = ps.length;
+    }
+  }
+  const target = best || cands[0];
+  if (!current || current.id !== target.id) await selectScripture(target.id);
+  requestAnimationFrame(() => {
+    const el = document.querySelector(`.passage[data-ordinal="${ordinal}"]`);
+    if (el) {
+      el.scrollIntoView({ block: "center", behavior: "smooth" });
+      el.focus({ preventScroll: true });
+    }
+  });
+}
+
+/** Heuristic pada tokens: whitespace/punctuation split (no sandhi analysis — labeled as such). */
+export function padaTokens(mula) {
+  return String(mula || "")
+    .split(/[\s।॥|]+/)
+    .map((t) => t.trim())
+    .filter(Boolean);
+}
+
+function padaTable(p) {
+  const wrap = document.createElement("div");
+  const cap = document.createElement("div");
+  cap.className = "meta";
+  cap.textContent = "Word tokens (heuristic split — no sandhi analysis, no grammar tags)";
+  const table = document.createElement("table");
+  table.className = "padas";
+  const head = document.createElement("tr");
+  for (const h of ["Pada", "IAST"]) {
+    const th = document.createElement("th");
+    th.textContent = h;
+    head.appendChild(th);
+  }
+  table.appendChild(head);
+  for (const tok of padaTokens(p.mula)) {
+    const tr = document.createElement("tr");
+    const a = document.createElement("td");
+    a.textContent = tok;
+    const b = document.createElement("td");
+    try {
+      b.textContent = transliterateText(tok, "deva", "iast");
+    } catch {
+      b.textContent = tok;
+    }
+    tr.append(a, b);
+    table.appendChild(tr);
+  }
+  wrap.append(cap, table);
+  return wrap;
+}
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try {
+      ok = document.execCommand("copy");
+    } catch {
+      /* ignore */
+    }
+    ta.remove();
+    return ok;
+  }
+}
+
+async function copyPassage(p) {
+  const mulaShown = ui.lang === "en" && p.en ? p.en : p.mula;
+  const parts = [
+    mulaShown,
+    p.primaryEn ? `\nGranthaKosha explains: ${p.primaryEn}` : "",
+    `\n— GranthaKosha · ${current ? current.title : ""} · §${p.section || "—"} #${p.ordinal}`,
+  ].join("\n");
+  say((await copyText(parts)) ? "Verse + translation + citation copied." : "Copy failed in this browser.");
+}
+
+let speakingFor = null;
+function speakPassage(p, mulaEl) {
+  try {
+    if (!("speechSynthesis" in window)) {
+      say("Speech not supported in this browser.");
+      return;
+    }
+    speechSynthesis.cancel();
+    if (speakingFor === p.id) {
+      speakingFor = null;
+      return;
+    }
+    speakingFor = p.id;
+    const text = ui.lang === "en" && p.en ? p.en : p.mula.replace(/[।॥|]/g, " ");
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = ui.lang === "en" ? "en-IN" : "sa-IN";
+    u.rate = Number(ui.ttsRate || 1);
+    // best-effort word highlight (Chromium boundary events)
+    const words = text.split(/\s+/).filter(Boolean);
+    let plain = null;
+    if (mulaEl && !($("search").value.trim())) {
+      plain = mulaEl.innerHTML;
+      mulaEl.innerHTML = words.map((w) => `<span class="w">${w.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</span>`).join(" ");
+    }
+    const spans = mulaEl ? [...mulaEl.querySelectorAll(".w")] : [];
+    let ci = 0;
+    const offs = [];
+    for (const w of words) {
+      ci = text.indexOf(w, ci);
+      offs.push(ci);
+      ci += w.length;
+    }
+    u.onboundary = (e) => {
+      if (typeof e.charIndex !== "number") return;
+      let k = 0;
+      for (let j = 0; j < offs.length; j++) if (offs[j] <= e.charIndex) k = j;
+      spans.forEach((s, j) => s.classList.toggle("speaking", j === k));
+    };
+    const done = () => {
+      if (plain !== null && mulaEl) mulaEl.innerHTML = plain;
+      speakingFor = null;
+    };
+    u.onend = done;
+    u.onerror = done;
+    speechSynthesis.speak(u);
+    say(`Speaking verse ${p.ordinal} (${u.rate}x). Tap 🔊 again to stop.`);
+  } catch {
+    say("Speech failed in this browser.");
+  }
+}
+
 // ---------- events ----------
 function applyPrefs() {
   document.documentElement.dataset.theme = ui.theme;
@@ -368,6 +697,7 @@ function applyPrefs() {
   $("lang").value = ui.lang;
   $("fontsize").value = String(ui.fontSize);
   $("lineheight").value = String(ui.lineHeight);
+  $("ttsrate").value = String(ui.ttsRate || 1);
   document.documentElement.style.setProperty("--font-size", `${ui.fontSize}px`);
   document.documentElement.style.setProperty("--line-height", String(ui.lineHeight));
 }
@@ -409,6 +739,11 @@ async function boot() {
   $("search").oninput = () => renderReader();
   $("scope").onchange = () => renderReader();
   $("author").oninput = () => renderReader();
+  $("ttsrate").onchange = (e) => {
+    ui.ttsRate = Number(e.target.value);
+    saveUI();
+    applyPrefs();
+  };
   $("lang").onchange = (e) => {
     ui.lang = e.target.value;
     saveUI();
@@ -418,7 +753,73 @@ async function boot() {
     });
   };
 
-  // drawer wiring
+  // workbench wiring
+  const SCRIPT_LABEL = { deva: "Devanagari", iast: "IAST", iso15919: "ISO 15919", bengali: "Bengali", telugu: "Telugu", kannada: "Kannada", malayalam: "Malayalam" };
+  for (const id of ["wbFrom", "wbTo"]) {
+    const sel = $(id);
+    sel.innerHTML = "";
+    for (const s of SCRIPTS) {
+      const o = document.createElement("option");
+      o.value = s;
+      o.textContent = SCRIPT_LABEL[s] || s;
+      sel.appendChild(o);
+    }
+  }
+  $("wbFrom").value = "deva";
+  $("wbTo").value = "iast";
+  $("wbGo").onclick = () => {
+    try {
+      $("wbOut").textContent = transliterateText($("wbIn").value, $("wbFrom").value, $("wbTo").value) || "(empty)";
+    } catch (e) {
+      $("wbOut").textContent = `Error: ${e.message || e}`;
+    }
+  };
+  $("wbCopy").onclick = async () => {
+    say((await copyText($("wbOut").textContent)) ? "Workbench output copied." : "Copy failed.");
+  };
+
+  // concepts dialog
+  const renderConcepts = (filter = "") => {
+    const grid = $("conceptGrid");
+    grid.innerHTML = "";
+    const qf = filter.trim().toLowerCase();
+    for (const c of CONCEPTS) {
+      if (qf && !(c.term + " " + c.iast + " " + c.def).toLowerCase().includes(qf)) continue;
+      const card = document.createElement("div");
+      card.className = "panel";
+      const h = document.createElement("strong");
+      h.textContent = `${c.term} · ${c.iast}`;
+      const d = document.createElement("div");
+      d.className = "status";
+      d.textContent = c.def;
+      card.append(h, d);
+      for (const l of c.links.slice(0, 5)) {
+        const b = document.createElement("button");
+        b.className = "btn s-item";
+        b.textContent = `${l.scripture} §${l.section} #${l.ordinal}`;
+        b.onclick = () => {
+          $("concepts").close();
+          gotoPassage(l.scripture, l.ordinal);
+        };
+        card.appendChild(b);
+      }
+      grid.appendChild(card);
+    }
+    if (!grid.childElementCount) grid.innerHTML = '<div class="status">No concepts match.</div>';
+  };
+  $("conceptBtn").onclick = () => {
+    renderConcepts();
+    $("conceptFilter").value = "";
+    $("concepts").showModal();
+    $("conceptFilter").focus();
+  };
+  $("conceptFilter").oninput = (e) => renderConcepts(e.target.value);
+  $("conceptClose").onclick = () => $("concepts").close();
+
+  $("loadFullBtn").onclick = (e) => void loadCompleteCorpus(e.target);
+
+  await migrateSeedTitle();
+  await refreshStudy();
   $("drawerClose").onclick = () => closeDrawer();
   $("overlay").onclick = () => closeDrawer();
   let dy0 = 0;

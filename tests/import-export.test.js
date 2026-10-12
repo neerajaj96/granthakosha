@@ -66,6 +66,28 @@ describe("import/export robustness", () => {
     assert.deepEqual(rep.errors, []);
   });
 
+  it("fresh import preserves source ordinals 1:1", async () => {
+    const doc = {
+      version: 1,
+      exportedAt: 0,
+      scriptures: [{ id: "x", title: "T" }],
+      passages: [5, 6, 9].map((n) => ({
+        id: `p:${n}`, scriptureId: "x", ordinal: n, section: "S",
+        mula: `मूला-${n}`, createdAt: 0, updatedAt: 0,
+      })),
+      commentaries: [{ id: "c:1", passageId: "p:6", author: "A", title: "", text: "t", createdAt: 0, updatedAt: 0 }],
+    };
+    const s = await store.createScripture("T");
+    const rep = await store.importAppend(JSON.parse(JSON.stringify(doc)), s.id);
+    assert.equal(rep.addedPassages, 3);
+    const all = await store.listPassages(s.id);
+    assert.deepEqual(all.map((p) => p.ordinal), [5, 6, 9]);
+    assert.equal(all[1].id, `${s.id}:p:6`);
+    const cs = await store.listCommentaries(all[1].id);
+    assert.equal(cs.length, 1); // remapped, no orphan
+    assert.deepEqual(rep.errors, []);
+  });
+
   it("corrupt import fails safely with rollback (nothing written)", async () => {
     const s = await store.createScripture("T");
     await store.addPassage(s.id, "मूला", "S");

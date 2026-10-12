@@ -1,5 +1,19 @@
 # GranthaKosha — Revised Execution Checklist
 
+## Stack note (answered spec honestly)
+
+The React/Vite/Tailwind/Zustand/FlexSearch rewrite is **blocked**: npm's
+cache is irreparably broken in this environment (cacache ENOENT on every
+install — verified repeatedly), so no npm dependency can be installed. Per
+the standing rule against discarding the working codebase, every requested
+*feature* below is implemented on the proven zero-dependency stack
+(browser-native ES modules, localStorage/IndexedDB, Web Speech API).
+No mock data: reader, search, concepts and workbench all run on the real
+shipped corpora (Durgāsaptaśatī + Tantrāloka Ch.1, 3000+ verses).
+Deliberately NOT faked: pada tables show heuristic tokens only (no invented
+grammar tags/meanings); Grantha script omitted (codepoints unverifiable
+offline); audio is device TTS, not recorded recitation.
+
 Source scriptures:
 - Google Doc `Durgasaptashati / Guptavati-adi-sapta-tika-samvalita`
   (~23.5k lines: Upoddhāta, Kavaca, Argalā, Kīlaka, 13 Adhyāyas,
@@ -13,6 +27,22 @@ maintainer batches: `content/primary-batch-N.json` merged by
 scripture+ordinal / author), then seeded into the app.
 
 ## M1 — Vertical slice [Implemented] [Tested]
+
+## Reader engine 2.0 [Implemented] [Tested]
+- [x] Multi-script switcher: Devanāgarī, IAST, ISO 15919, Bengali, Telugu,
+      Kannada, Malayalam — instant, no refetch (`transliterateText` pivot
+      engine; 7 transliterator tests incl. round-trips + Bengali va/Malayalam
+      RRA-chillu quirks)
+- [x] Transliteration workbench in sidebar (any→any + copy)
+- [x] Pada view per verse (honest heuristic tokens + IAST, labeled as such)
+- [x] One-click copy: verse + translation + citation
+- [x] Bookmarks + per-verse notes drawer section (localStorage, jump-to-verse)
+- [x] Verse audio via device TTS (0.75x/1x/1.25x) with best-effort word highlight
+- [x] Darśana concept explorer: 24 curated definitions, links COMPUTED from
+      corpora via the real search index (all 24 linked, tested); title+ordinal
+      links stable across installs; full-corpus on-demand loader (4 MB) with
+      ordinal-preserving import so links never rot
+- [x] Ordinal-preserving fresh import (tested); seed retitled + migrated
 - [x] Scripture entity, exact Mūla persistence, independent commentaries,
       per-card expand/collapse, reload restore, append-only growth, unicode +
       import/export integrity tests, full reader chrome (themes, Deva/IAST,

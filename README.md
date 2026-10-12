@@ -30,6 +30,12 @@ append new material without losing data or corrupting line mappings.
 
 ## M2/M3 (done)
 
+## Reader engine 2.0
+
+- 7 scripts, instant switch (Devanāgarī/IAST/ISO-15919/Bengali/Telugu/Kannada/Malayalam) + sidebar transliteration workbench
+- Pada tokens, one-click verse+translation+citation copy, bookmarks + notes, verse audio (device TTS, 3 speeds)
+- Concept explorer (24 terms, corpus-computed links) + on-demand complete-text loader
+
 - Reader: ṭīkā focus drawer, line-height + font-size + theme + script controls.
 - Corpus pipeline: `node tools/parse-corpus.mjs` parses the 23k-line source into
   2944 passages + 4550 ṭīkās (`corpus/durgasaptashati.json`); browser import

@@ -31,6 +31,17 @@
       <select id="script" aria-label="Script toggle">
         <option value="deva">Devanagari</option>
         <option value="iast">IAST</option>
+        <option value="iso15919">ISO 15919</option>
+        <option value="bengali">Bengali</option>
+        <option value="telugu">Telugu</option>
+        <option value="kannada">Kannada</option>
+        <option value="malayalam">Malayalam</option>
+      </select>
+    </label>
+    <label>🔊 <select id="ttsrate" aria-label="Speech speed">
+        <option value="0.75">0.75x</option>
+        <option value="1" selected>1x</option>
+        <option value="1.25">1.25x</option>
       </select>
     </label>
     <label>Aa <input id="fontsize" type="range" min="15" max="28" value="19" aria-label="Font size" /></label>
@@ -47,6 +58,26 @@
     <aside class="sidebar" aria-label="Library">
       <h2>Scriptures</h2>
       <div id="scriptureList"></div>
+      <div class="row">
+        <button id="loadFullBtn" class="btn">Load complete Durgāsaptaśatī</button>
+      </div>
+      <h2 style="margin-top:1rem">Study</h2>
+      <div class="row">
+        <button id="conceptBtn" class="btn">Concepts</button>
+      </div>
+      <div id="studyList"></div>
+      <h2 style="margin-top:1rem">Workbench</h2>
+      <div class="row">
+        <select id="wbFrom" aria-label="Source script"></select>
+        <span aria-hidden="true">→</span>
+        <select id="wbTo" aria-label="Target script"></select>
+      </div>
+      <textarea id="wbIn" rows="3" placeholder="Paste text…" aria-label="Workbench input" style="margin:.4rem 0"></textarea>
+      <div class="row">
+        <button id="wbGo" class="btn primary">Convert</button>
+        <button id="wbCopy" class="btn">Copy</button>
+      </div>
+      <div id="wbOut" class="status" style="white-space:pre-wrap" aria-live="polite"></div>
       <h2 style="margin-top:1rem">Backup</h2>
       <div class="row">
         <button id="exportBtn" class="btn">Export JSON</button>
@@ -61,6 +92,15 @@
     </main>
   </div>
   <script type="module" src="src/main.js"></script>
+  <dialog id="concepts" aria-label="Concept explorer">
+    <div class="row">
+      <h2 style="margin:0">Darśana concepts</h2>
+      <div class="spacer"></div>
+      <button id="conceptClose" class="btn" aria-label="Close concept explorer">✕</button>
+    </div>
+    <input id="conceptFilter" type="search" placeholder="Filter concepts…" aria-label="Filter concepts" style="margin:.5rem 0; width:100%" />
+    <div id="conceptGrid"></div>
+  </dialog>
   <div id="overlay" hidden></div>
   <aside id="drawer" aria-label="Focused commentary" hidden>
     <div class="row">

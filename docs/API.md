@@ -63,12 +63,26 @@ keys for cross-script queries) → `search(index, query, {scope, author})` →
 `[{pid, score, hits, ordinal}]` ranked. `highlight(text, query)` → safe HTML
 with `<mark>` on raw-substring hits. `tokenize`, `indexKeys`, `escapeHtml`.
 
+## Transliteration (`src/lib/transliterate.js`)
+
+`transliterateText(text, from, to)` over Devanāgarī, IAST, ISO-15919,
+Bengali, Telugu, Kannada, Malayalam (Deva pivot; Brahmic by block offset;
+IAST↔Deva parser both ways). Malayalam RRA/chillu + Bengali va quirks
+handled + tested. Grantha omitted (unverifiable offline).
+
 ## Display plane (`src/lib/display.js`)
 
 `renderText(s, en, lang, script)` / `tikaDisplayText(c, lang, script)` —
 EN prefers `en`/`simpleEn`, falls back to Latin-script originals, else the
 forthcoming notice. Pure + tested. Primary cards (`primaryEn`) render in both
-languages, pinned under each verse.
+languages, pinned under each verse. Script-aware via `transliterateText`.
+
+## Concepts (`tools/concepts-src.json` + `tools/build-concepts.mjs`)
+
+24 curated term definitions; verse links computed from shipped corpora via
+the real search index into `src/lib/concepts.js`. Links are
+(title, ordinal) — stable across installs (record ids are random per install).
+Fresh imports preserve source ordinals 1:1 so links never rot.
 
 ## IAST (`src/lib/iast.js`)
 

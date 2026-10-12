@@ -12,6 +12,10 @@ describe("EN display plane", () => {
     assert.equal(renderText("मूला", undefined, "en"), EN_FORTHCOMING);
     assert.equal(renderText("कृष्णः", "", "sa", "iast"), "kṛṣṇaḥ");
     assert.equal(renderText("कृष्णः", "", "sa", "deva"), "कृष्णः");
+    assert.equal(renderText("देवी", "", "sa", "malayalam"), "ദേവീ");
+    assert.equal(renderText("देवी", "", "sa", "bengali"), "দেবী");
+    assert.equal(renderText("देवी", "", "sa", "iso15919"), "dēvī");
+    assert.equal(renderText("देवी", "", "sa", "klingon"), "देवी"); // unknown falls back
   });
 
   it("tikaDisplayText prefers simpleEn, then Latin, then notice", () => {

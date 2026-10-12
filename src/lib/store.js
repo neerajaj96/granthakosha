@@ -230,6 +230,13 @@ export class GranthaStore {
     const findKnown = (key) =>
       known.find((p) => fp(p) === key || fp(p).normalize("NFC") === key.normalize("NFC"));
 
+    // Ordinal preservation: importing into an EMPTY target keeps source
+    // ordinals (and ordinal-derived ids) 1:1, so external references
+    // (concept links, sidecar batches) stay valid. Non-empty targets use
+    // append semantics as before.
+    const targetEmpty = (await this.listPassages(targetId)).length === 0;
+    const usedOrdinals = new Set();
+
     // Map source passage index -> target passage id (for commentary remap)
     const passageRemap = new Map();
 
@@ -245,12 +252,38 @@ export class GranthaStore {
         if (match && src.id) passageRemap.set(src.id, match.id);
         continue;
       }
-      const added = await this.addPassage(
-        targetId,
-        hasMula ? src.mula : "",
-        typeof src.section === "string" ? src.section : "",
-        { en: hasEn ? src.en : "", primaryEn: typeof src.primaryEn === "string" ? src.primaryEn : "" }
-      );
+      const wantOrd = Number.isInteger(src.ordinal) && src.ordinal > 0 ? src.ordinal : 0;
+      let added;
+      if (targetEmpty && wantOrd && !usedOrdinals.has(wantOrd) &&
+          !(await this.adapter.get("passages", passageId(targetId, wantOrd)))) {
+        const now = Date.now();
+        added = {
+          id: passageId(targetId, wantOrd),
+          scriptureId: targetId,
+          ordinal: wantOrd,
+          section: typeof src.section === "string" ? src.section : "",
+          mula: hasMula ? src.mula : "",
+          en: hasEn ? src.en : "",
+          primaryEn: typeof src.primaryEn === "string" ? src.primaryEn : "",
+          createdAt: now,
+          updatedAt: now,
+        };
+        await this.adapter.put("passages", added);
+        this._ordCache.set(targetId, Math.max(this._ordCache.get(targetId) || 0, wantOrd));
+        const tgt = await this.getScripture(targetId);
+        if (tgt) {
+          tgt.updatedAt = now;
+          await this.adapter.put("scriptures", tgt);
+        }
+      } else {
+        added = await this.addPassage(
+          targetId,
+          hasMula ? src.mula : "",
+          typeof src.section === "string" ? src.section : "",
+          { en: hasEn ? src.en : "", primaryEn: typeof src.primaryEn === "string" ? src.primaryEn : "" }
+        );
+      }
+      usedOrdinals.add(added.ordinal);
       if (src.id) passageRemap.set(src.id, added.id);
       known.push(added);
       mulaExact.add(key);
