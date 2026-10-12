@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="sa" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>GranthaKosha — Durgāsaptaśatī Reader</title>
+  <meta name="description" content="Offline-first Sanskrit scripture + multi-commentary reader" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#0f1420" />
+  <link rel="stylesheet" href="src/styles.css" />
+</head>
+<body>
+  <a class="skip" href="#reader">Skip to reader</a>
+  <header class="topbar">
+    <div class="brand">GranthaKosha <small>ग्रन्थकोश · M1 vertical slice</small></div>
+    <div class="spacer"></div>
+    <label>Theme
+      <select id="theme" aria-label="Reading theme">
+        <option value="dark">Dark</option>
+        <option value="light">Light</option>
+        <option value="sepia">Sepia</option>
+      </select>
+    </label>
+    <label>Script
+      <select id="script" aria-label="Script toggle">
+        <option value="deva">Devanagari</option>
+        <option value="iast">IAST</option>
+      </select>
+    </label>
+    <label>Aa <input id="fontsize" type="range" min="15" max="28" value="19" aria-label="Font size" /></label>
+    <label>Lh <input id="lineheight" type="range" min="1.5" max="2.8" step="0.1" value="2" aria-label="Line height" /></label>
+    <input id="search" type="search" placeholder="Search (/)" aria-label="Search passages" />
+    <select id="scope" aria-label="Search scope">
+      <option value="all">All</option>
+      <option value="mula">Mūla</option>
+      <option value="tika">Ṭīkā</option>
+    </select>
+    <input id="author" type="text" placeholder="author…" aria-label="Filter by commentator" style="width:7em" />
+  </header>
+  <div class="layout">
+    <aside class="sidebar" aria-label="Library">
+      <h2>Scriptures</h2>
+      <div id="scriptureList"></div>
+      <h2 style="margin-top:1rem">Role</h2>
+      <div class="row">
+        <select id="role" aria-label="Active role">
+          <option value="reader">Reader (read-only)</option>
+          <option value="editor">Editor</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <h2 style="margin-top:1rem">New scripture</h2>
+      <div class="row" id="newScriptureRow">
+        <input id="newTitle" type="text" placeholder="Title — e.g. Devīmāhātmya" style="flex:1" />
+        <button id="createBtn" class="btn primary">Create</button>
+      </div>
+      <h2 style="margin-top:1rem">Backup</h2>
+      <div class="row">
+        <button id="exportBtn" class="btn">Export JSON</button>
+        <button id="wizardBtn" class="btn primary">Import wizard</button>
+      </div>
+      <div class="row">
+        <label class="btn" id="quickImportLabel">Quick import <input id="importFile" type="file" accept="application/json" hidden /></label>
+        <button id="snapBtn" class="btn">Snapshot now</button>
+      </div>
+      <div id="snapshotList"></div>
+      <div id="importStatus" class="status" role="status" aria-live="polite"></div>
+      <h2 style="margin-top:1rem">Cloud sync</h2>
+      <div id="cloudPanel">
+        <div class="row">
+          <input id="cloudUrl" type="text" placeholder="https://xyz.supabase.co" aria-label="Supabase project URL" style="flex:1" />
+        </div>
+        <div class="row">
+          <input id="cloudKey" type="password" placeholder="anon key" aria-label="Supabase anon key" style="flex:1" />
+        </div>
+        <div class="row">
+          <button id="cloudTest" class="btn">Test</button>
+          <button id="cloudDry" class="btn">Dry-run</button>
+        </div>
+        <div class="row">
+          <button id="cloudPush" class="btn">Push</button>
+          <button id="cloudPull" class="btn">Pull</button>
+          <button id="cloudSync" class="btn primary">Sync</button>
+        </div>
+        <div id="syncStatus" class="status" role="status" aria-live="polite"></div>
+      </div>
+      <h2 style="margin-top:1rem">Keys</h2>
+      <div class="status"><span class="kbd">j</span>/<span class="kbd">k</span> navigate · <span class="kbd">o</span> toggle · <span class="kbd">/</span> search · <span class="kbd">t</span> theme</div>
+    </aside>
+    <main class="reader" id="reader" aria-label="Reader">
+      <div id="readerHead"></div>
+      <div id="passages"></div>
+      <section class="panel forms" id="appendPanel" aria-label="Append material">
+        <h2 style="margin:.2rem 0">Append mūla passage</h2>
+        <input id="newSection" type="text" placeholder="Section — e.g. Upoddhātaḥ / Adhyāya 1" />
+        <textarea id="newMula" placeholder="Paste EXACT mūla text here — stored verbatim, never normalized"></textarea>
+        <div class="row"><button id="addPassageBtn" class="btn primary">Append passage</button></div>
+        <div id="status" class="status" role="status" aria-live="polite"></div>
+      </section>
+    </main>
+  </div>
+  <script type="module" src="src/main.js"></script>
+  <dialog id="wizard" aria-label="Data import wizard">
+    <h2>Import wizard</h2>
+    <div class="steps" aria-label="Wizard steps">
+      <span class="step" data-s="1">1 Source</span> →
+      <span class="step" data-s="2">2 Preview</span> →
+      <span class="step" data-s="3">3 Confirm</span>
+    </div>
+    <div id="wStep1">
+      <div class="row" role="radiogroup" aria-label="Input format">
+        <label><input type="radio" name="wfmt" value="auto" checked /> Auto-detect</label>
+        <label><input type="radio" name="wfmt" value="corpus" /> Corpus text</label>
+        <label><input type="radio" name="wfmt" value="json" /> JSON</label>
+        <label><input type="radio" name="wfmt" value="csv" /> CSV</label>
+      </div>
+      <textarea id="wInput" placeholder="Paste corpus text, ExportDoc JSON, or section,mula,author,commentary CSV rows…"></textarea>
+      <div class="row">
+        <label class="btn">Upload file <input id="wFile" type="file" accept=".txt,.json,.csv,application/json,text/plain" hidden /></label>
+        <button id="wToPreview" class="btn primary">Preview →</button>
+      </div>
+    </div>
+    <div id="wStep2" hidden>
+      <div id="wPreview" class="status" role="status" aria-live="polite" style="white-space:pre-wrap"></div>
+      <div class="row">
+        <button id="wBack" class="btn">← Back</button>
+        <button id="wConfirm" class="btn primary">Confirm import</button>
+      </div>
+    </div>
+    <div id="wStep3" hidden>
+      <div id="wReport" class="status" role="status" aria-live="polite" style="white-space:pre-wrap"></div>
+      <div class="row"><button id="wClose" class="btn primary">Done</button></div>
+    </div>
+  </dialog>
+  <div id="overlay" hidden></div>
+  <aside id="drawer" aria-label="Focused commentary" hidden>
+    <div class="row">
+      <strong id="drawerTitle">Ṭīkā focus</strong>
+      <div class="spacer"></div>
+      <button id="drawerClose" class="btn" aria-label="Close commentary drawer">✕</button>
+    </div>
+    <div class="meta" id="drawerMeta"></div>
+    <label>Commentary <select id="drawerSelect" aria-label="Choose commentary"></select></label>
+    <div class="body" id="drawerBody" style="white-space:pre-wrap"></div>
+  </aside>
+</body>
+</html>
