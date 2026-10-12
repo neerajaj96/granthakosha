@@ -54,6 +54,7 @@ export function normalizeAuthor(rawTag) {
 }
 
 const RE_PAGE_NUM = /^[०-९0-9\s]+$/;
+const RE_SEPARATOR = /^\*+$/;
 const RE_TAG = /^\(([^)]{1,45})\)/;
 const RE_FOOTNOTE = /^[०-९0-9]+\.\s/;
 // A danda MARK is ॥ (U+0965, double-danda as one char) or ।। (two U+0964).
@@ -165,6 +166,7 @@ export function parseCorpus(rawText, opts = {}) {
 
     if (!s) continue;
     if (RE_PAGE_NUM.test(s)) { stats.droppedNoise++; continue; }
+    if (RE_SEPARATOR.test(s)) { stats.droppedNoise++; continue; }
     if (s.includes("[") || s.includes("]")) {
       const sec = harvestSection(s);
       if (sec) section = sec;

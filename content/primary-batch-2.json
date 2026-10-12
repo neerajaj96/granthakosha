@@ -1,0 +1,329 @@
+{
+ "batch": 2,
+ "note": "Translator: maintainer's working Simple English. Argala Stotra (ordinals = regenerated corpus). en = faithful layman rendering; primaryEn = combined verse + ALL attached tikas; simpleEn = layman tika.",
+ "primaries": [
+  {
+   "scripture": "corpus",
+   "ordinal": 176,
+   "primaryEn": "This opening passage salutes the Goddess by Her beloved names — Durgā, Kṣamā (Forgiveness), Śivā, Dhātrī (Nourisher), Svāhā and Svadhā — and offers Her respectful salutation. In simple words: O Mother, You are famous under all these holy names, and I bow to You. (The next passage explains what each name means.)"
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 177,
+   "primaryEn": "This passage opens the meanings of the Goddess's eleven names, and combined with the note attached to it, all eleven are: 1. Jayantī — She who wins over everything, the highest victor. 2. Maṅgalā — She who carries Her devotees to good fortune and swift progress. 3. Kālī — She who swallows the whole world at the end of time. 4. Bhadrakālī — She who gives welfare and goodness to Her devotees. 5. Kapālinī — She who holds the skull-bowl. 6. Durgā — She who is reached only with great effort through yoga, worship and hard practice, and whose songs are sung in times of trouble. 7. Kṣamā — the Mother whose heart overflows with mercy, so She forgives all Her children's faults by nature. 8. Śivā — the giver of goodness, the Mother of the world, Herself pure consciousness. 9. Dhātrī — She who holds and feeds the entire universe. 10. Svāhā — the power by which the gods receive their share of every sacrifice. 11. Svadhā — the power by which departed ancestors receive offerings of food and water. In short: this first verse describes the Mother's complete work — winning, blessing, protecting, feeding gods, ancestors and devotees — and is itself treated as a great mantra."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 178,
+   "primaryEn": "Salutation to Her who drove away Madhu and Kaiṭabha and blessed Brahmā! Then comes the refrain repeated through the whole hymn: Grant me beauty, victory and fame, and destroy my foes. In simple words: O Mother who chased away the demons Madhu-Kaiṭabha and gave a boon to Brahmā, I bow to You — give me spiritual beauty, victory, and good name, and kill my enemies. The deep meaning of the refrain (explained in the commentaries ahead): 'beauty' means the supreme Self shining in the heart; 'victory' means the treasure of the Vedas; 'fame' means the glory born of true wisdom; and the 'foes' to be killed are lust, anger and the inner enemies."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 179,
+   "primaryEn": "Salutation to Her who brings about the total destruction of Mahiṣāsura and grants boons! Grant me beauty, victory and fame, and destroy my foes. In simple words: O Mother who finished the buffalo-demon Mahiṣa completely and who blesses Her children, I bow to You — bless me with beauty, victory and good name, and destroy the enemies within and without."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 180,
+   "primaryEn": "O Goddess whose twin feet are worshipped by all, O giver of good fortune — grant me beauty, victory and fame, and destroy my foes. Combined with the three commentaries: the grammar joins 'She who scatters (the demons) and also grants Brahmā's boon' into one; 'beauty' here means three things at once — the charm that wins over Her own people, the terror She strikes into Her enemies, and divine loveliness itself. The Pradīpa retells the beloved story from the Devībhāgavata — Brahmā praised Her to kill Madhu-Kaiṭabha and She blessed him — and opens the refrain's inner meaning: beauty is the supreme Self to be known, victory is the wealth of Veda and sacred memory, fame is the glory born of Self-knowledge, and the foes are lust, anger and their brood. On verse 4 it notes Her feet are worshipped even by Brahmā and Viṣṇu, and the word 'Devi' is repeated purely out of overflowing devotion."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 181,
+   "primaryEn": "O Goddess, salutation to You! Give me beauty, victory and fame, and destroy enemies like lust and anger. (Verse 2.) In simple words this is the Hindi prayer of the same verse: the devotee bows and begs the Mother who killed Madhu-Kaiṭabha for inner beauty, success, good name, and freedom from anger and desire."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 182,
+   "primaryEn": "Some prayer-books carry one extra verse before this point — 'Victory to You, O Cāmuṇḍā, remover of the sufferings of beings! Victory to the all-pervading Goddess! Salutation to Kālarātri!' — but the editors explain honestly: this verse is not accepted by tradition and no ancient commentator explains it, so it is not counted in the original hymn. Then the Hindi prayer continues: O destroyer of Mahiṣāsura, giver of boons, salutation! Give beauty, victory, fame, destroy foes (verse 3). O Goddess with worshipped twin feet, giver of fortune — give beauty, victory, fame, destroy foes (verse 4)."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 183,
+   "primaryEn": "O Goddess who brought about the killing of Raktabīja, O destroyer of Caṇḍa and Muṇḍa — grant me beauty, victory and fame, and destroy my foes. In simple words: O Mother who killed the blood-seed demon (from whose every drop of blood new demons sprang) and finished Caṇḍa-Muṇḍa, I bow — bless me with beauty, victory and fame, and kill my inner foes."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 184,
+   "primaryEn": "O Goddess whose form and deeds are beyond thought, O destroyer of all foes — grant me beauty, victory and fame, and destroy my foes. In simple words: O Mother whose shape and actions no mind can fully grasp, who wipes out every enemy, I bow — bless and protect me."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 185,
+   "primaryEn": "O Caṇḍikā, to those bowed with devotion forever, and to bowed-down me — grant beauty, victory and fame, and destroy my foes. In simple words: O Mother, to all Your devotees who bow with love at all times, and to me too who bows before You — give beauty, victory, fame, and destroy our foes."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 186,
+   "primaryEn": "O Caṇḍikā, destroyer of diseases, to those who praise You first with devotion — grant beauty, victory and fame, and destroy my foes. Combined with the four commentaries: the grammar joins 'the killing happened through Her' into one word for verse 5; verse 6's 'beyond thought' is backed by the Upaniṣad lines — 'words turn back from It' and 'the overseer in the highest heaven knows, or perhaps does not know'; verse 7 simply connects — to the ever-bowed devotees and to bowed me, give beauty and the rest; verse 8 works the same way. One caution from Pradīpa: some books insert a verse about Śumbha here, but it is a wrong reading — the ancients never explain it and old books don't carry it. The Hindi prayer then repeats verses 5–8 as devotion: killer of Raktabīja and Caṇḍa-Muṇḍa; beyond-thought destroyer of foes; giver to all bowing devotees and to me; healer of diseases worshipped with love — give beauty, victory, fame, destroy lust, anger and all foes."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 187,
+   "primaryEn": "O Caṇḍikā, to those who worship You here constantly with devotion — grant beauty, victory and fame, and destroy my foes. In simple words: whoever serves You daily with a loving heart — bless them with beauty, victory, good name, and destroy their enemies."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 188,
+   "primaryEn": "Grant good fortune and health, O Goddess, grant supreme happiness — grant me beauty, victory and fame, and destroy my foes. In simple words: O Mother, bless me with luck, a healthy body and the highest joy — and with beauty, victory, fame, and freedom from foes."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 189,
+   "primaryEn": "Bring about the destruction of my haters; build up strength in me to the highest — grant me beauty, victory and fame, and destroy my foes. In simple words: O Mother, finish those who hate me and fill me with towering strength — with beauty, victory, fame, and no enemies left."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 190,
+   "primaryEn": "Bring welfare, O Goddess; grant vast noble wealth — grant me beauty, victory and fame, and destroy my foes. In simple words: O Mother, make my life blessed and fill my home with plenty — with beauty, victory, fame, and destroyed foes."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 191,
+   "primaryEn": "Make (Your) person learned, famous and wealthy — grant beauty, victory and fame, and destroy my foes. In simple words: O Mother, make Your devotee — make me — full of learning, shining with good name and blessed with wealth — with beauty, victory, fame, and no inner enemies."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 192,
+   "primaryEn": "O Caṇḍikā who crushes the pride of the terrible demons, to bowed-down me — grant beauty, victory and fame, and destroy my foes. In simple words: O Mother who smashes the arrogance of the fiercest demons, I surrender before You — bless me with beauty, victory, fame, and destroy my foes."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 193,
+   "primaryEn": "O supreme Lady praised by the four-faced one (Brahmā) and the four-armed one (Viṣṇu) — grant beauty, victory and fame, and destroy my foes. Combined with the commentaries: verses 9–12 each silently add 'to those who worship' / 'to me' — supply it while chanting. 'Your person' in verse 13 means Your devotee — me. The Hindi prayer repeats the same devotion across verses 9–15: to constant worshippers; luck, health and highest joy to me; ruin of haters and towering strength in me; welfare and vast wealth; learning, fame and riches for Your servant; shelter for surrendered me before the demon-pride-crusher; praise from Brahmā and Viṣṇu — always closing with: give beauty, victory, fame, and destroy lust, anger and all foes."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 194,
+   "primaryEn": "O supreme Lady with four arms, praised by four-faced Brahmā — give beauty, victory and fame, and destroy the foes like lust and anger. (Verse 15, Hindi prayer.) In simple words: the devotee pictures the Mother with four arms, hymned by Brahmā Himself, and begs for beauty, victory, fame and freedom from inner enemies."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 195,
+   "primaryEn": "O Goddess hymned by Kṛṣṇa, O Ambikā, always with true devotion — grant beauty, victory and fame, and destroy my foes. In simple words: O Mother whom Lord Kṛṣṇa Himself praises with steady love — I bow; bless me with beauty, victory, fame, and destroy my foes."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 196,
+   "primaryEn": "O supreme Lady worshipped by the Lord of Himālaya's daughter (Śiva, husband of Pārvatī) — grant beauty, victory and fame, and destroy my foes. In simple words: O Mother worshipped even by Lord Śiva Himself — I bow; bless me with beauty, victory, fame, and destroy my foes."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 197,
+   "primaryEn": "O Ambikā whose feet are rubbed by the crown-jewels of gods and demons alike — grant beauty, victory and fame, and destroy my foes. In simple words: O Mother before whose feet even gods and demons bow their jewelled crowns — I bow; bless me with beauty, victory, fame, and destroy my foes."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 198,
+   "primaryEn": "O supreme Lady worshipped with true feeling by Indra, husband of Indrāṇī — grant beauty, victory and fame, and destroy my foes. Combined with the commentaries: Guptavatī tells the old Purāṇa story — Indra once hid long inside a lotus stalk in a lake, and regained his place only by worshipping the Goddess with a true heart; that is the 'true feeling' praised here. Pradīpa adds the inner hint of verse 18: when gods and demons bow together at one pair of feet, all hatred melts into oneness — a whisper of non-duality. The Hindi prayer repeats verses 16–19 with love: hymned by Viṣṇu-Kṛṣṇa; worshipped by Śiva; feet rubbed by gods' and demons' crowns; worshipped sincerely by Indra — always: give beauty, victory, fame, and destroy my lust, anger and foes."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 199,
+   "primaryEn": "This passage continues the old Guptavatī explanation of verse 19: the Purāṇas famously tell how Indrāṇī’s husband Indra won back his lost place only through worship of the Goddess — worship with a true heart recovers even a lost heaven. (The three attached notes give Pradīpa’s verse-by-verse gist, the Hindi prayers of verses 16–19, and two variant readings.)"
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 200,
+   "primaryEn": "O Goddess who destroys the pride of demons with strong staff-like arms — grant beauty, victory and fame, and destroy my foes. In simple words: O Mother whose mighty arms smash demon arrogance — I bow; bless me with beauty, victory, fame, and destroy my foes."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 201,
+   "primaryEn": "O Ambikā in whom the rise of bliss — liberation itself — is given to the finest among devotee folk — grant beauty, victory and fame, and destroy my foes. In simple words: O Mother who grants even final freedom to Her best devotees — I bow; bless me with beauty, victory, fame, and destroy my foes."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 202,
+   "primaryEn": "Grant a lovely wife who follows my heart's ways, who carries (souls) across the hard-to-cross ocean of worldly life, and who is born in a noble family. (Verse 22 — a householder's prayer.) Combined with the commentaries: 'she who ferries across' is compared to two famous mothers of story — Madālasā of the Mārkaṇḍeya Purāṇa, who ferried her son across, and Cūḍālā of the Yoga-Vāsiṣṭha, who ferried her husband across. So the verse begs: O Mother, bless me with a life-partner noble by birth, lovely, like-minded, and spiritually uplifting — one who helps me cross this ocean of birth and death. The Hindi prayer says the same with folded hands."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 203,
+   "primaryEn": "A man who, after reciting this hymn, recites the great hymn (the Saptashatī) — he obtains the excellent reward counted in Saptashatī numbers, along with riches. In simple words: chant the Argala first and then the Saptashatī, and you will surely receive the full fruit of the Saptashatī count plus abundant prosperity. The commentaries confirm: the 'great hymn' means the Saptashatī itself, which is the main hymn; this verse proves the Argala belongs to the Saptashatī family — so never skip it; the merit earned is countless, and it pours down as wealth too."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 204,
+   "primaryEn": "Thus ends the Argala praise of the Goddess. Combined with the closers: Guptavatī seals her explanation here, and Pradīpa underlines the rule — whoever chants the Saptashatī after this Argala hymn, and he alone, receives the fruit born of that count plus all riches. Therefore the Argala must always be read first — that is the final word."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 205,
+   "primaryEn": "Sin blocks success the way a bolt (argalā) bars a door — so the hymn that destroys it is itself called Argala. (Verse 23's seal.) In simple words: our sins stand like a wooden bolt across the door of blessings; this hymn smashes that bolt, and that is why its name is Argala, 'the unbolter'."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 206,
+   "primaryEn": "Here is gathered twenty-three verses in count — thus ends the Argala explanation. Combined with the Hindi prayer: whoever reads this Argala hymn and then reads the great Saptashatī hymn will surely gain its finest fruit along with overflowing wealth."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 207,
+   "primaryEn": "Along with the finest fruit born of the Saptashatī count, the chanter also gains abundant wealth. (Verse 23, Hindi.) In simple words: read Argala, then Saptashatī — and receive both the supreme spiritual fruit and full material prosperity."
+  }
+ ],
+ "tikas": [
+  {
+   "scripture": "corpus",
+   "ordinal": 177,
+   "author": "Pāṭhabheda-ṭippaṇī",
+   "textPrefix": "३. काली - कलयति भक्षयति प्रलयकाले सर्वम्",
+   "simpleEn": "Word-meanings of names 3 to 11 in plain words. Kālī: She who swallows the whole world at the end of time, like a mouthful. Bhadrakālī: She who gives goodness and welfare to devotees. Kapālinī: She who holds the skull-bowl. Durgā: She who is known only through hard practice — yoga, ritual and worship done with struggle — and whose songs are sung in suffering. Kṣamā: the Mother whose heart is so full of mercy that forgiving all faults comes naturally to Her. Śivā: the giver of goodness, the Mother of the world — Herself pure spirit. Dhātrī: She who holds up and feeds the entire universe. Svāhā: the power by which gods receive their share in every fire-sacrifice and stay nourished. Svadhā: the power by which ancestors receive food and water offerings and stay nourished. Closing note: so this first verse describes the Mother's complete work — and is itself a great mantra."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 180,
+   "author": "Guptavatī",
+   "textPrefix": "मध्विति । विद्राविणी च सा",
+   "simpleEn": "Grammar made simple. 'Madhu' here means: She who scattered the demons and also granted the boon — both ideas joined in one word. 'Beauty' (rūpa) has three shades: the charm that wins over Her own devotees, the terror She strikes into Her enemies, and divine loveliness. On verses 3–4: 'bringer of total destruction' is one single word; the passage just names each verse in turn."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 180,
+   "author": "Pradīpa",
+   "textPrefix": "मधुकैटभयोविंद्राविणी",
+   "simpleEn": "She scattered Madhu and Kaiṭabha, destroyed them, and blessed Brahmā — that is the meaning. The beloved story comes from the Devībhāgavata's first book: Brahmā praised Her to kill the two demons, and She granted him a boon. Now the deep meaning of the refrain, word by word. Beauty (rūpa): that which is known — the supreme Self; as the old saying goes, beauty is the soul-gem of gentle light — give me that, pleased by my salutation alone. Victory (jaya): that by which one wins the Self — the whole treasure of Veda and sacred memory — give that. Fame (yaśas): the glory praised in the scriptures, born of Self-knowledge — give that. Foes (dviṣas): kill them — lust, anger and the other inner enemies, destroy them. On verse 3: 'total destroyer of Mahiṣāsura' — She brings the destruction, and 'giver of boons' stands as its own word. On verse 4: even Brahmā, Viṣṇu and the rest worship Her twin feet — they stand lower before Her; and the word 'Goddess' is repeated twice purely out of overflowing love."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 180,
+   "author": "Candraprabhā",
+   "textPrefix": "मधु और कैटभ को मारने वाली",
+   "simpleEn": "O killer of Madhu and Kaiṭabha, O giver of boons to Brahmā — salutation! (The Hindi prayer of verse 2 continues in the next passage.)"
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 182,
+   "author": "Pāṭhabheda-ṭippaṇī",
+   "textPrefix": "१. 'महिषासुरनिर्णाशि भक्तानां सुखदे नमः'",
+   "simpleEn": "Variant readings found in some books, noted honestly. 1. Some books read 'salutation to the destroyer of Mahiṣāsura, giver of joy to devotees' (instead of 'bringer of total destruction, giver of boons'). 2. Some read 'giver of all good fortune' (instead of 'giver of fortune'). The passage then explains: the extra 'Victory to Cāmuṇḍā' verse found in some copies is not accepted by tradition and no ancient explainer comments on it, so it is left out of the original text."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 186,
+   "author": "Guptavatī",
+   "textPrefix": "रक्तबीजस्य वधो यस्याः",
+   "simpleEn": "Short grammar notes: 'whose killing of Raktabīja happened through Her' — that is how verse 5 joins its words. Verses 6, 7 and 8 are named in turn, needing no further splitting."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 186,
+   "author": "Pradīpa",
+   "textPrefix": "रक्तबीजेति । रक्तबीजस्य वधः",
+   "simpleEn": "On verse 5: 'killer of Raktabīja' means She in whom the duty of killing him rests — She got it done, whether by Herself or through Her power. Caution: some books insert a verse about Śumbha here, but that reading is wrong — the ancients never explain it and old books don't carry it. On verse 6 ('beyond thought'): the scriptures themselves say it — 'words turn back from It' and 'the overseer in the highest heaven knows, or perhaps does not know' — the Mother is beyond mind and speech. On verse 7: read it joined together — 'to those ever-bowed with devotion, and to bowed-down me, give beauty and the rest.' Verse 8 works exactly the same way."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 186,
+   "author": "Candraprabhā",
+   "textPrefix": "रक्तबीज का वध करने वाली",
+   "simpleEn": "O killer of Raktabīja and destroyer of Caṇḍa-Muṇḍa — give beauty, victory, fame, and destroy lust, anger and all foes (verse 5). Note: after this, some copies carry an extra verse on Śumbha, Niśumbha and Dhūmrākṣa — give beauty, victory, fame, destroy foes — but tradition does not accept it."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 186,
+   "author": "Pāṭhabheda-ṭippaṇī",
+   "textPrefix": "१. 'चण्डिके दुरितापदे' इति पाठः",
+   "simpleEn": "One variant: some books read 'O Caṇḍikā, remover of sins and dangers' — but since tradition does not accept it, it is not taken into the original. Then the Hindi prayers of verses 6–8: O inconceivable, foe-destroying Mother — give beauty, victory, fame, destroy lust and anger. To all people ever bowed with devotion, and to bowed me too — give beauty, victory, fame, destroy foes. O healer of diseases, praised first with love by Your singers — give them beauty, victory, fame, and destroy their lust, anger and foes."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 193,
+   "author": "Guptavatī",
+   "textPrefix": "ये त्वामर्चयन्ति तेभ्य",
+   "simpleEn": "Short supply-notes for chanting: in verse 9 (and the same in 10, 11, 12) silently add 'to those (who worship You)'. In verse 13, 'Your person' means Your devotee — me. Verses 14 and 15 need nothing added."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 193,
+   "author": "Pradīpa",
+   "textPrefix": "चण्डिके सततमित्यत्रापि",
+   "simpleEn": "Same supply-note for verse 9: add 'to those who worship You'. Verse 10: 'grant fortune' means grant it to me. Verse 11: 'build up' means build towering strength in me. Verses 12–15: verse 13 asks — make Your devotee, Your own servant, full of the wisdom of the Absolute — and then give beauty and the rest; verses 14 and 15 carry the same prayer forward."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 193,
+   "author": "Candraprabhā",
+   "textPrefix": "हे चण्डिके इस संसार में",
+   "simpleEn": "O Caṇḍikā, to all in this world who worship You daily with love — give beauty, victory, fame, and destroy their lust, anger and foes. (Verse 9; the Hindi prayers of verses 10–15 continue in the attached note.)"
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 193,
+   "author": "Pāṭhabheda-ṭippaṇī",
+   "textPrefix": "१. 'देहि मे परमं सुखम्'",
+   "simpleEn": "Two variants: some books read 'grant me the highest joy' and 'the supreme (joy)' — noted, not adopted. Then the Hindi prayers of verses 10–15: give me luck, health and highest joy (10); ruin my haters, fill me with noble strength (11); bless me and grant vast wealth (12); make Your servant learned, famous and rich (13); O crusher of fierce demon-pride, shelter surrendered me (14); O four-armed supreme Lady hymned by four-faced Brahmā (15) — every verse closing: give beauty, victory, fame, and destroy my lust, anger and foes."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 198,
+   "author": "Guptavatī",
+   "textPrefix": "।। १६॥१७॥१८॥ इन्द्राण्या",
+   "simpleEn": "Verses 16–18 need no grammar notes. On verse 19 ('worshipped by Indra with true feeling'): the old Purāṇa story is meant — Indra once hid for a long time inside a lotus stalk in a lake, and won his place back only by worshipping the Goddess; that sincere worship is what the verse praises. Or simply: worshipped by Indra, the husband of Indrāṇī, with a true heart."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 199,
+   "author": "Pradīpa",
+   "textPrefix": "कृष्णेन संस्तुते इति",
+   "simpleEn": "On verse 16: the story of Kṛṣṇa praising Her is famous from the Devībhāgavata. On 17: 'lord of Himālaya's daughter' is Śiva, Pārvatī's husband — worshipped by Him. On 18: here is a hidden hint — when gods and demons together bow at one pair of feet, all hatred melts and oneness dawns; that is why both are named together. On 19: worshipped by Indra with a sincere heart."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 199,
+   "author": "Candraprabhā",
+   "textPrefix": "भगवान् विष्णु के द्वारा",
+   "simpleEn": "O Goddess ever hymned with love by Lord Viṣṇu — give beauty, victory, fame, and destroy my lust, anger and foes. (Verse 16; the Hindi prayers of 17–19 continue in the attached note.)"
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 199,
+   "author": "Pāṭhabheda-ṭippaṇī",
+   "textPrefix": "१. 'सदाम्बिके' इति क्वचित्पाठः",
+   "simpleEn": "Two variants: some read 'ever-Ambikā' and 'well-praised' — noted, not adopted. Then the Hindi prayers of verses 17–19: O supreme Lady worshipped by Lord Śiva, husband of Pārvatī (17); O Ambikā whose feet are rubbed by the crown-jewels of gods and demons (18); O supreme Lady worshipped sincerely by Indra, husband of Indrāṇī (19) — every verse: give beauty, victory, fame, and destroy my lust, anger and foes."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 202,
+   "author": "Guptavatī",
+   "textPrefix": "।।२० ॥ भक्तजनेषु य उद्दामास्तेभ्यो",
+   "simpleEn": "Verse 20 needs no note. On 21: 'given the rise of bliss to the finest devotees' means liberation itself is granted to the best among them, by Her. On 22: 'she who ferries across' is like two famous mothers of story — Madālasā of the Mārkaṇḍeya Purāṇa, who ferried her son across, and Cūḍālā of the Yoga-Vāsiṣṭha, who ferried her husband across. The first saved her son through wisdom, the second saved her husband — so the stories say."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 202,
+   "author": "Pradīpa",
+   "textPrefix": "।।२०॥ भक्तजनेषु य उद्दामास्तेभ्यो",
+   "simpleEn": "Verse 20 needs no note. Verse 21 as above: liberation dawns, given by Her, for the finest devotees. On 22 ('she who ferries across'): She is like Madālasā, famed in the Mārkaṇḍeya Purāṇa, and Cūḍālā, famed in the Yoga-Vāsiṣṭha — the first ferried her son across the ocean of life, the second ferried her husband — as their stories tell."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 202,
+   "author": "Candraprabhā",
+   "textPrefix": "अपने प्रचण्ड भुजदण्ड से",
+   "simpleEn": "O Goddess who smash demon-pride with strong staff-like arms — give beauty, victory, fame, destroy lust, anger and foes (20). O Ambikā by whom the dawn of bliss — freedom itself — is given to the finest devotees — give me beauty, victory, fame, destroy my foes (21). O Goddess, grant me a lovely, like-minded, nobly-born wife who ferries souls across the hard ocean of worldly life (22)."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 204,
+   "author": "Guptavatī",
+   "textPrefix": "महास्तोत्रम् एतत्प्रधानभूतं",
+   "simpleEn": "The 'great hymn' means the Saptashatī hymn itself, which is the chief one. 'The excellent reward counted in Saptashatī numbers' means: the merit born of that count is countless without end — and that same endless reward pours down as wealth too. Thus ends the Guptavatī explanation of the Argala hymn."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 204,
+   "author": "Pradīpa",
+   "textPrefix": "महास्तोत्रं सप्तशत्याख्यम्",
+   "simpleEn": "The 'great hymn' is the one called Saptashatī — and this very line teaches that the Argala hymn is itself a limb of the Saptashatī. Whoever chants the Saptashatī hymn after reading the Argala — he alone, and no other — receives the fruit born of that count, plus all riches. So the Argala hymn must always be read first — that is the final meaning."
+  },
+  {
+   "scripture": "corpus",
+   "ordinal": 206,
+   "author": "Candraprabhā",
+   "textPrefix": "जो मनुष्य इस (अर्गला) स्तोत्र को",
+   "simpleEn": "Whoever reads this Argala hymn and then reads the great Saptashatī hymn will surely gain its finest fruit born of that count, along with overflowing wealth. (Verse 23, Hindi; concluded in the next passage.)"
+  }
+ ]
+}

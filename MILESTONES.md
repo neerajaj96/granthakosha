@@ -27,6 +27,10 @@ scripture+ordinal / author), then seeded into the app.
       content shows an honest "being prepared" notice + coverage counters
 - [x] Batch 1: 6/6 seed verses (literal EN + primaries + 9 simplified ṭīkās);
       Tantrāloka units 1–8 primaries via versioned sidecar + merge CLI
+- [x] Batch 2 (translator's own): full Argalā Stotra — 32/32 verses with
+      working EN + combined primaries, 23/23 attached ṭīkās simplified
+      (`content/primary-batch-2.json`); `***` separator artifacts now dropped
+      by the parser (51 noise lines)
 - [x] `src/lib/display.js` pure display plane + 4 tests; store carry-through
       (add/import/export round-trip) tested; search indexes EN planes too
 - [ ] Batches 2+: remaining 212 Tantraloka primaries, 2944 Saptashati primaries
