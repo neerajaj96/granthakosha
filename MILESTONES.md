@@ -38,6 +38,11 @@ scripture+ordinal / author), then seeded into the app.
       (44) + Mūrti incl. colophon & pardon verses (45) — 130/130 working EN
       + combined primaries, 63/63 attached ṭīkās simplified
       (`content/primary-batch-4.json`)
+- [x] Batch 5 (translator's own): hymn cluster — Vedic + Tantrokta Rātri,
+      Tantrokta Devī Sūkta, Aparādha-kṣamāpaṇa, Saptaślokī + 108 names,
+      Siddhakuñjikā, Devyatharvaśīrṣa + Śaktirahasya — 183/183 working EN
+      + combined primaries, 51/51 attached ṭīkās simplified
+      (`content/primary-batch-5.json`)
 - [x] `src/lib/display.js` pure display plane + 4 tests; store carry-through
       (add/import/export round-trip) tested; search indexes EN planes too
 - [ ] Batches 2+: remaining 212 Tantraloka primaries, 2944 Saptashati primaries
